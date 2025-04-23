@@ -24,65 +24,73 @@ const riskCards: RiskCard[] = [
   {
     id: 'operational',
     title: 'Operational Disruption',
-    description: 'Coordinate Responses with Supplier, vendors relation and production teams',
+    description: 'Coordinate responses to system outages and service disruptions',
     icon: <Building2 className="h-12 w-12 text-red-500" />,
-    impact: 'Logistics Issues and Delays in payment',
-    scenario: 'A manufacturing company has been hit by a ransomware attack that has encrypted their production line control systems. The attack has halted all manufacturing operations, affecting their ability to fulfill customer orders. The company is facing significant operational disruption, potential contract penalties, and reputational damage.',
+    impact: 'System Availability and Business Operations',
+    scenario: 'As IT Security Lead, you discover that ransomware has encrypted multiple critical systems including file servers, databases, and application servers. The attack has halted all business operations, affecting system availability and service delivery. You must quickly address the disruption while maintaining security.',
     questions: [
       {
-        question: 'What should be the first action when operational disruption is detected?',
+        question: 'What should be your first priority when operations are disrupted?',
         options: [
-          'Continue operations as normal',
-          'Immediately shut down all systems',
-          'Assess the situation and isolate affected systems',
-          'Contact the attackers'
+          'Continue normal operations',
+          'Assess and isolate affected systems',
+          'Contact all departments',
+          'Start system restoration'
         ],
-        correctAnswer: 2,
-        explanation: 'Assessing the situation and isolating affected systems helps contain the incident while maintaining critical operations.',
+        correctAnswer: 1,
+        explanation: 'Assessing and isolating affected systems helps contain the incident while understanding its scope.',
         hints: [
-          'Consider the immediate impact on production and safety',
-          'Think about containment while maintaining critical operations'
+          'Consider incident containment',
+          'Think about impact assessment'
         ]
       },
       {
-        question: 'How should you prioritize system recovery during operational disruption?',
+        question: 'How should you prioritize operational recovery?',
         options: [
           'Recover all systems simultaneously',
-          'Start with non-critical systems first',
-          'Prioritize based on business impact analysis',
-          'Wait for complete investigation before recovery'
+          'Start with non-critical systems',
+          'Prioritize based on business impact and dependencies',
+          'Wait for complete investigation'
         ],
         correctAnswer: 2,
-        explanation: 'Using business impact analysis ensures critical operations are restored first.',
+        explanation: 'Prioritizing based on business impact ensures critical operations are restored first.',
         hints: [
-          'Consider which systems are most critical for business continuity',
-          'Think about the dependencies between different systems'
+          'Consider business continuity',
+          'Think about system dependencies'
         ]
       },
       {
-        question: 'What communication channel should be used during the incident?',
+        question: 'What operational channels should be used during the incident?',
         options: [
           'Regular email system',
           'Public announcement system',
-          'Out-of-band communication channels',
+          'Secure incident response channels',
           'Social media platforms'
         ],
         correctAnswer: 2,
-        explanation: 'Out-of-band channels ensure secure communication when regular systems might be compromised.'
+        explanation: 'Secure incident response channels ensure operational coordination while maintaining security.',
+        hints: [
+          'Consider secure communications',
+          'Think about coordination needs'
+        ]
       },
       {
-        question: 'How should vendor access be managed during the incident?',
+        question: 'How should operational access be managed during the incident?',
         options: [
-          'Maintain all vendor access',
-          'Revoke all vendor access immediately',
-          'Review and restrict based on necessity',
-          'Grant additional access to all vendors'
+          'Maintain all access levels',
+          'Revoke all access',
+          'Implement strict access controls with monitoring',
+          'Delegate access decisions'
         ],
         correctAnswer: 2,
-        explanation: 'Reviewing and restricting vendor access helps maintain security while allowing necessary operations.'
+        explanation: 'Strict access controls with monitoring help maintain security while enabling necessary operations.',
+        hints: [
+          'Consider access requirements',
+          'Think about security controls'
+        ]
       },
       {
-        question: 'What documentation should be maintained during the operational disruption?',
+        question: 'What operational documentation should be maintained?',
         options: [
           'Only final resolution steps',
           'No documentation needed',
@@ -90,91 +98,95 @@ const riskCards: RiskCard[] = [
           'Only system logs'
         ],
         correctAnswer: 2,
-        explanation: 'Comprehensive documentation helps with incident analysis and future improvements.'
+        explanation: 'Comprehensive documentation helps track the incident and improve future response.',
+        hints: [
+          'Consider incident tracking',
+          'Think about lessons learned'
+        ]
       }
     ]
   },
   {
     id: 'ransom',
     title: 'Ransom Pay',
-    description: 'The attackers demand $50 million as ransom and threaten to release data on public forums',
+    description: 'Handle ransom demands and payment considerations',
     icon: <Banknote className="h-12 w-12 text-yellow-500" />,
-    impact: 'Operational loss',
-    scenario: 'A multinational corporation discovers their critical data has been encrypted, and attackers are demanding $50 million in cryptocurrency. They threaten to publish sensitive customer data and intellectual property if the ransom isn\'t paid within 72 hours. The company must decide how to respond while considering legal implications, customer privacy, and business continuity.',
+    impact: 'Financial Impact and Data Recovery',
+    scenario: 'The attackers have demanded a significant ransom payment in cryptocurrency to provide decryption keys. You must evaluate the ransom demand while considering data recovery options and organizational impact.',
     questions: [
       {
-        question: 'What is the recommended approach when receiving a ransom demand?',
+        question: 'What is your first step in evaluating the ransom demand?',
         options: [
-          'Pay the ransom immediately',
-          'Ignore the demand completely',
-          'Consult with legal team and law enforcement',
-          'Negotiate with attackers directly'
-        ],
-        correctAnswer: 2,
-        explanation: 'Consulting with legal experts and law enforcement ensures compliance and proper handling of the situation.',
-        hints: [
-          'Consider the legal implications of paying ransom',
-          'Think about involving appropriate authorities'
-        ]
-      },
-      {
-        question: 'What should be the first step in evaluating a ransom demand?',
-        options: [
-          'Calculate if we can afford the ransom',
-          'Assess the authenticity and scope of the attack',
-          'Start cryptocurrency transfer preparations',
-          'Announce it to the public'
+          'Calculate payment amount',
+          'Assess data recovery capabilities and impact',
+          'Prepare cryptocurrency wallet',
+          'Contact attackers immediately'
         ],
         correctAnswer: 1,
-        explanation: 'Verifying the attack\'s authenticity and understanding its scope is crucial before making any decisions.',
+        explanation: 'Assessing recovery capabilities helps determine if payment is necessary.',
         hints: [
-          'Think about validating the threat',
-          'Consider the importance of understanding the full situation'
+          'Consider backup availability',
+          'Think about recovery options'
         ]
       },
       {
-        question: 'How should the organization document the ransom demand?',
+        question: 'How should you document ransom-related decisions?',
         options: [
-          'Screenshot the demand only',
-          'Ignore documentation to avoid liability',
-          'Maintain comprehensive records of all communications and actions',
-          'Only record the amount demanded'
+          'Screenshot ransom note only',
+          'Ignore documentation',
+          'Maintain comprehensive decision records',
+          'Only record payment details'
         ],
         correctAnswer: 2,
-        explanation: 'Complete documentation is essential for legal purposes, insurance claims, and post-incident analysis.',
+        explanation: 'Complete documentation protects the organization and informs future decisions.',
         hints: [
-          'Think about future legal requirements',
-          'Consider what information might be needed later'
+          'Consider legal requirements',
+          'Think about decision tracking'
         ]
       },
       {
-        question: 'What factor should NOT primarily influence the ransom payment decision?',
+        question: 'What factors should NOT primarily influence payment decision?',
         options: [
-          'Data recovery capabilities',
-          'Legal implications',
-          'The relatively low ransom amount',
-          'Business impact assessment'
+          'Data recovery options',
+          'Business impact',
+          'Ransom amount alone',
+          'Legal implications'
         ],
         correctAnswer: 2,
-        explanation: 'The amount of ransom should not be the primary factor; focus should be on broader implications and alternatives.',
+        explanation: 'The ransom amount alone should not drive the decision; consider all factors.',
         hints: [
-          'Consider long-term consequences',
-          'Think about organizational principles'
+          'Consider multiple factors',
+          'Think about long-term impact'
         ]
       },
       {
-        question: 'What should be prepared before making any ransom payment decision?',
+        question: 'What preparations are needed before any payment decision?',
         options: [
-          'Just the cryptocurrency wallet',
-          'A comprehensive impact and recovery assessment',
-          'Public announcement draft',
-          'New IT security policies'
+          'Just cryptocurrency setup',
+          'Complete impact and recovery assessment',
+          'Draft public statement',
+          'Budget allocation only'
         ],
         correctAnswer: 1,
-        explanation: 'A thorough assessment helps understand the full implications and alternatives to paying the ransom.',
+        explanation: 'A thorough assessment helps make an informed payment decision.',
         hints: [
-          'Think about what information decision-makers need',
-          'Consider the broader business context'
+          'Consider assessment needs',
+          'Think about decision factors'
+        ]
+      },
+      {
+        question: 'How should negotiations be handled?',
+        options: [
+          'Accept first demand',
+          'Ignore all demands',
+          'Follow established incident response procedures',
+          'Make counter-offers'
+        ],
+        correctAnswer: 2,
+        explanation: 'Following procedures ensures consistent and appropriate handling of demands.',
+        hints: [
+          'Consider response protocols',
+          'Think about negotiation risks'
         ]
       }
     ]
@@ -182,84 +194,169 @@ const riskCards: RiskCard[] = [
   {
     id: 'financial',
     title: 'Financial Loss',
-    description: 'Assessment and management of financial impact from the ransomware attack',
+    description: 'Assessment and management of incident-related costs',
     icon: <AlertTriangle className="h-12 w-12 text-orange-500" />,
-    impact: 'Significant financial damage and potential long-term effects',
-    scenario: 'A major financial services company has been hit by ransomware, affecting their trading systems and customer accounts. Initial estimates suggest potential losses of millions per day in trading revenue, recovery costs, and potential regulatory fines. The company needs to assess and manage both immediate and long-term financial impacts while maintaining market confidence.',
+    impact: 'Financial Impact and Recovery Costs',
+    scenario: 'The ransomware incident has caused significant financial impact through system downtime, recovery costs, and potential data loss. You need to assess and manage these financial implications while planning recovery efforts.',
     questions: [
       {
-        question: 'How should financial impact be assessed during a ransomware attack?',
+        question: 'How should you assess the financial impact?',
         options: [
-          'Only consider the ransom amount',
+          'Only direct costs',
+          'Wait until resolution',
+          'Comprehensive cost and impact analysis',
+          'Basic damage estimate'
+        ],
+        correctAnswer: 2,
+        explanation: 'A comprehensive analysis helps understand full financial implications.',
+        hints: [
+          'Consider all cost types',
+          'Think about long-term impact'
+        ]
+      },
+      {
+        question: 'What should be included in cost assessment?',
+        options: [
+          'Only system repairs',
+          'Just overtime costs',
+          'All direct and indirect costs including recovery',
+          'Hardware costs only'
+        ],
+        correctAnswer: 2,
+        explanation: 'Including all costs ensures accurate impact assessment.',
+        hints: [
+          'Consider hidden costs',
+          'Think about recovery expenses'
+        ]
+      },
+      {
+        question: 'How should recovery spending be prioritized?',
+        options: [
+          'Lowest cost options',
+          'Most expensive solutions',
+          'Based on business impact and effectiveness',
+          'Equal distribution'
+        ],
+        correctAnswer: 2,
+        explanation: 'Prioritizing based on impact ensures effective use of resources.',
+        hints: [
+          'Consider cost-benefit',
+          'Think about critical needs'
+        ]
+      },
+      {
+        question: 'What financial documentation is crucial?',
+        options: [
+          'Only invoices',
+          'Basic summaries',
+          'Detailed records of all costs and decisions',
+          'Budget reports only'
+        ],
+        correctAnswer: 2,
+        explanation: 'Detailed documentation supports insurance claims and future planning.',
+        hints: [
+          'Consider insurance needs',
+          'Think about audit requirements'
+        ]
+      },
+      {
+        question: 'How should budget adjustments be handled?',
+        options: [
+          'Cut all spending',
+          'Ignore budget limits',
+          'Strategic reallocation based on priorities',
+          'Maintain current budget'
+        ],
+        correctAnswer: 2,
+        explanation: 'Strategic reallocation ensures critical needs are met while managing costs.',
+        hints: [
+          'Consider critical needs',
+          'Think about resource allocation'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'technical',
+    title: 'Technical Recovery',
+    description: 'System restoration and data recovery procedures',
+    icon: <AlertTriangle className="h-12 w-12 text-orange-500" />,
+    impact: 'System Restoration and Data Integrity',
+    scenario: 'As IT Security Lead, you must coordinate the technical recovery of affected systems while ensuring data integrity and preventing re-infection. The recovery process must be carefully planned and executed to minimize business disruption.',
+    questions: [
+      {
+        question: 'How should you approach system recovery?',
+        options: [
+          'Restore from the most recent backup',
           'Wait until the incident is over',
-          'Conduct immediate and ongoing assessment of direct and indirect costs',
-          'Focus only on immediate losses'
+          'Follow a structured recovery plan with validation steps',
+          'Focus only on critical systems'
         ],
         correctAnswer: 2,
-        explanation: 'A comprehensive assessment including both direct and indirect costs provides a complete picture of the financial impact.',
+        explanation: 'A structured recovery plan ensures systematic and validated restoration.',
         hints: [
-          'Think about both short-term and long-term costs',
-          'Consider various types of financial impacts'
+          'Think about recovery procedures',
+          'Consider validation requirements'
         ]
       },
       {
-        question: 'What should be included in the initial financial impact assessment?',
+        question: 'What should be included in the technical recovery plan?',
         options: [
-          'Only system repair costs',
-          'Just customer compensation estimates',
-          'Comprehensive evaluation including business interruption, recovery, and reputation costs',
-          'Only cyber insurance premiums'
+          'Only system restoration steps',
+          'Just data recovery procedures',
+          'Comprehensive recovery procedures with validation and testing',
+          'Only security updates'
         ],
         correctAnswer: 2,
-        explanation: 'A complete initial assessment helps in making informed decisions and planning resource allocation.',
+        explanation: 'A complete recovery plan ensures all aspects of system restoration are covered.',
         hints: [
-          'Consider all potential areas of financial impact',
-          'Think about both tangible and intangible costs'
+          'Consider all recovery aspects',
+          'Think about validation steps'
         ]
       },
       {
-        question: 'How should the organization handle financial reporting during the incident?',
+        question: 'How should you handle system monitoring during recovery?',
         options: [
-          'Delay all financial reporting',
-          'Report only to internal stakeholders',
-          'Maintain transparent and accurate reporting while following regulatory requirements',
-          'Underreport the impact to maintain stability'
+          'Disable monitoring',
+          'Continue normal monitoring',
+          'Implement enhanced monitoring with alerts',
+          'Reduce monitoring to save resources'
         ],
         correctAnswer: 2,
-        explanation: 'Transparent and accurate reporting maintains trust while ensuring regulatory compliance.',
+        explanation: 'Enhanced monitoring helps detect any issues during recovery.',
         hints: [
-          'Consider regulatory obligations',
-          'Think about stakeholder trust'
+          'Consider system stability',
+          'Think about early warning systems'
         ]
       },
       {
-        question: 'What financial reserves should be considered for activation?',
+        question: 'What security measures should be implemented during recovery?',
         options: [
-          'Only cyber insurance',
-          'Just emergency cash reserves',
-          'Comprehensive contingency funds including insurance, reserves, and credit lines',
-          'None until the full impact is known'
+          'Only basic security',
+          'Just network segmentation',
+          'Comprehensive security controls and monitoring',
+          'None until recovery is complete'
         ],
         correctAnswer: 2,
-        explanation: 'Multiple financial resources may be needed to manage the incident effectively.',
+        explanation: 'Multiple security measures help prevent re-infection during recovery.',
         hints: [
-          'Think about different sources of emergency funding',
-          'Consider the scale of potential needs'
+          'Think about layered security',
+          'Consider protection mechanisms'
         ]
       },
       {
-        question: 'How should long-term financial recovery be planned?',
+        question: 'How should you communicate technical status to stakeholders?',
         options: [
-          'Wait until the incident is resolved',
-          'Focus only on immediate costs',
-          'Develop a comprehensive recovery plan including investment in prevention',
-          'Consider only insurance claims'
+          'Provide only positive information',
+          'Share complete technical status with recovery progress',
+          'Delay communication until full recovery',
+          'Delegate to the IT team'
         ],
-        correctAnswer: 2,
-        explanation: 'Long-term planning should include measures to prevent future incidents and strengthen financial resilience.',
+        correctAnswer: 1,
+        explanation: 'Sharing complete technical status helps stakeholders understand the recovery progress.',
         hints: [
-          'Think about preventing future incidents',
-          'Consider sustainable recovery measures'
+          'Consider stakeholder needs',
+          'Think about transparency'
         ]
       }
     ]
@@ -267,84 +364,84 @@ const riskCards: RiskCard[] = [
   {
     id: 'regulatory',
     title: 'Regulatory Notification',
-    description: 'Compliance with regulatory requirements and notification procedures',
+    description: 'Compliance with notification requirements',
     icon: <Bell className="h-12 w-12 text-purple-500" />,
-    impact: 'Potential compliance violations and penalties',
-    scenario: 'A healthcare provider discovers a ransomware attack has potentially exposed protected health information (PHI) of thousands of patients. They must navigate complex regulatory requirements including HIPAA, state breach notification laws, and other applicable regulations. Time is critical, and the organization must ensure all proper notifications are made while managing the incident.',
+    impact: 'Compliance and Legal Obligations',
+    scenario: 'The ransomware incident requires notifications to various regulatory bodies due to potential data exposure. You must ensure compliance with all applicable notification requirements while managing the ongoing incident.',
     questions: [
       {
-        question: 'When should regulatory authorities be notified of a ransomware attack?',
+        question: 'When should regulatory authorities be notified?',
         options: [
-          'Only if data is confirmed stolen',
-          'Within required timeframes based on applicable regulations',
-          'After the incident is resolved',
-          'Only if media reports the incident'
+          'Only after resolution',
+          'Within required notification timeframes',
+          'After public disclosure',
+          'When asked by regulators'
         ],
         correctAnswer: 1,
-        explanation: 'Timely notification according to regulatory requirements is crucial for compliance and proper incident handling.',
+        explanation: 'Timely notification within required timeframes ensures compliance.',
         hints: [
-          'Consider regulatory deadlines',
-          'Think about the consequences of delayed reporting'
+          'Consider legal deadlines',
+          'Think about notification requirements'
         ]
       },
       {
-        question: 'What information should be included in regulatory notifications?',
+        question: 'What information must be included in notifications?',
         options: [
-          'Basic incident details only',
-          'Complete technical analysis',
-          'Required information as specified by regulations and preliminary impact assessment',
-          'Only the ransom demand'
+          'Basic incident details',
+          'Technical analysis only',
+          'Required information per regulations',
+          'System status only'
         ],
         correctAnswer: 2,
-        explanation: 'Notifications should include all required information while being accurate and thorough.',
+        explanation: 'Including required information ensures regulatory compliance.',
         hints: [
-          'Review regulatory requirements',
-          'Consider what authorities need to know'
+          'Consider regulatory requirements',
+          'Think about notification content'
         ]
       },
       {
-        question: 'How should multiple regulatory notification requirements be handled?',
+        question: 'How should multiple regulations be handled?',
         options: [
-          'Notify only the main regulator',
-          'Choose the strictest requirement only',
-          'Comply with all applicable regulatory requirements systematically',
-          'Wait for regulators to contact you'
+          'Follow strictest only',
+          'Choose one regulation',
+          'Comply with all applicable requirements',
+          'Minimum compliance only'
         ],
         correctAnswer: 2,
-        explanation: 'Organizations must comply with all applicable regulations, managing notifications systematically.',
+        explanation: 'Meeting all applicable requirements ensures full compliance.',
         hints: [
-          'Think about overlapping requirements',
-          'Consider international regulations if applicable'
+          'Consider all obligations',
+          'Think about overlapping requirements'
         ]
       },
       {
-        question: 'What documentation should be maintained for regulatory compliance?',
+        question: 'What documentation should be maintained?',
         options: [
-          'Only notification copies',
-          'Just internal reports',
-          'Comprehensive records of the incident, notifications, and response actions',
-          'Only technical logs'
+          'Notification copies only',
+          'Basic records only',
+          'Comprehensive compliance records',
+          'System logs only'
         ],
         correctAnswer: 2,
-        explanation: 'Complete documentation demonstrates compliance and supports potential regulatory investigations.',
+        explanation: 'Complete documentation demonstrates compliance efforts.',
         hints: [
-          'Think about proving compliance',
-          'Consider future audits'
+          'Consider audit needs',
+          'Think about compliance proof'
         ]
       },
       {
-        question: 'How should ongoing regulatory communications be managed?',
+        question: 'How should ongoing regulatory updates be managed?',
         options: [
-          'Respond only when contacted',
-          'Provide updates rarely',
-          'Maintain proactive and regular communication as required',
-          'Delegate to junior staff'
+          'Wait for requests',
+          'Minimal updates',
+          'Proactive communication and updates',
+          'Final report only'
         ],
         correctAnswer: 2,
-        explanation: 'Proactive communication with regulators helps maintain compliance and demonstrates good faith.',
+        explanation: 'Proactive updates maintain good regulatory relationships.',
         hints: [
-          'Consider building regulatory relationships',
-          'Think about maintaining trust'
+          'Consider regulator needs',
+          'Think about ongoing compliance'
         ]
       }
     ]
@@ -352,84 +449,84 @@ const riskCards: RiskCard[] = [
   {
     id: 'employee',
     title: 'Employee Notification',
-    description: 'Communication strategy for employees during the incident',
+    description: 'Internal communication and staff updates',
     icon: <Users className="h-12 w-12 text-blue-500" />,
-    impact: 'Employee awareness and response coordination',
-    scenario: 'A global company with 50,000 employees across multiple time zones faces a ransomware attack affecting various systems. Employees need to be notified about the situation, work arrangements, security protocols, and their role in the recovery process. The communication must be clear, timely, and appropriate for different employee groups while maintaining security.',
+    impact: 'Staff Awareness and Response',
+    scenario: 'Employees need to be informed about the ransomware incident and their role in the response. You must manage internal communications while ensuring security and maintaining operational effectiveness.',
     questions: [
       {
-        question: 'What information should be included in employee notifications?',
+        question: 'What should employees be told initially?',
         options: [
-          'Technical details of the attack',
-          'Clear instructions and immediate actions required',
-          'Names of affected systems only',
-          'Complete incident investigation results'
+          'Technical details only',
+          'Clear instructions and immediate actions',
+          'System names only',
+          'Complete investigation results'
         ],
         correctAnswer: 1,
-        explanation: 'Clear, actionable instructions help employees respond effectively while maintaining operational security.',
+        explanation: 'Clear instructions help employees respond appropriately.',
         hints: [
-          'Think about what employees need to know',
-          'Consider security implications'
+          'Consider immediate needs',
+          'Think about action items'
         ]
       },
       {
-        question: 'How should employee notifications be prioritized?',
+        question: 'How should employee communications be prioritized?',
         options: [
-          'Notify everyone simultaneously',
-          'Inform only affected departments',
-          'Prioritize based on impact and role in response',
-          'Wait for full investigation'
+          'All at once',
+          'Random order',
+          'Based on impact and role',
+          'Alphabetical order'
         ],
         correctAnswer: 2,
-        explanation: 'Strategic notification ensures critical responders are informed first while managing communication effectively.',
+        explanation: 'Prioritizing by impact ensures critical staff are informed first.',
         hints: [
-          'Consider critical response roles',
-          'Think about communication efficiency'
+          'Consider role importance',
+          'Think about response needs'
         ]
       },
       {
-        question: 'What communication channels should be used for employee notifications?',
+        question: 'What communication channels should be used?',
         options: [
           'Email only',
-          'Internal messaging only',
-          'Multiple secure channels appropriate to the situation',
-          'Public social media'
+          'Phone only',
+          'Multiple secure channels',
+          'Public channels'
         ],
         correctAnswer: 2,
-        explanation: 'Using multiple appropriate channels ensures reliable communication reach.',
+        explanation: 'Multiple secure channels ensure reliable communication.',
         hints: [
-          'Think about communication reliability',
-          'Consider backup channels'
+          'Consider security needs',
+          'Think about reliability'
         ]
       },
       {
-        question: 'How should employee questions and concerns be managed?',
+        question: 'How should employee questions be handled?',
         options: [
-          'Ignore until crisis is over',
-          'Direct all to IT department',
-          'Establish a structured response system with dedicated channels',
-          'Let each department handle independently'
+          'Ignore questions',
+          'Individual responses',
+          'Structured response system',
+          'Defer all questions'
         ],
         correctAnswer: 2,
-        explanation: 'A structured system ensures consistent, efficient handling of employee concerns.',
+        explanation: 'A structured system ensures consistent and efficient responses.',
         hints: [
-          'Consider scalability of response',
+          'Consider response efficiency',
           'Think about consistency'
         ]
       },
       {
-        question: 'What ongoing communication should be maintained with employees?',
+        question: 'What ongoing updates should be provided?',
         options: [
-          'None after initial notification',
-          'Daily technical updates',
-          'Regular updates on status, actions needed, and recovery progress',
-          'Only major milestones'
+          'None needed',
+          'Technical only',
+          'Regular status and action updates',
+          'Final resolution only'
         ],
         correctAnswer: 2,
-        explanation: 'Regular updates maintain employee awareness and engagement in the recovery process.',
+        explanation: 'Regular updates maintain awareness and engagement.',
         hints: [
-          'Think about maintaining morale',
-          'Consider information needs over time'
+          'Consider information needs',
+          'Think about ongoing awareness'
         ]
       }
     ]
@@ -437,84 +534,84 @@ const riskCards: RiskCard[] = [
   {
     id: 'crisis',
     title: 'Crisis Communication',
-    description: 'External communication management and stakeholder relations',
+    description: 'External stakeholder communication',
     icon: <MessageSquare className="h-12 w-12 text-green-500" />,
-    impact: 'Public relations and stakeholder confidence',
-    scenario: 'A prominent retail company suffers a ransomware attack during peak shopping season. The incident attracts media attention, and various stakeholders - including customers, investors, partners, and the public - demand information. The company must manage external communications while handling the technical crisis and maintaining stakeholder confidence.',
+    impact: 'Public Relations and Trust',
+    scenario: 'The ransomware incident requires careful communication with external stakeholders. You must manage public relations while protecting sensitive information and maintaining stakeholder confidence.',
     questions: [
       {
-        question: 'Who should be responsible for external communications during a ransomware incident?',
+        question: 'Who should handle external communications?',
         options: [
-          'IT team',
-          'Any available manager',
-          'Designated crisis communication team',
+          'IT staff',
+          'Any manager',
+          'Designated communication team',
           'Security team'
         ],
         correctAnswer: 2,
-        explanation: 'A designated crisis communication team ensures consistent, appropriate messaging and stakeholder management.',
+        explanation: 'A designated team ensures consistent and appropriate messaging.',
         hints: [
-          'Consider message consistency',
-          'Think about communication expertise'
+          'Consider message control',
+          'Think about consistency'
         ]
       },
       {
-        question: 'How should initial public statements be handled?',
+        question: 'How should initial statements be handled?',
         options: [
-          'Release all information immediately',
-          'Deny any incident',
-          'Provide confirmed facts and action being taken',
-          'No comment until resolution'
+          'Share all details',
+          'No comment',
+          'Confirmed facts and actions',
+          'Deny incident'
         ],
         correctAnswer: 2,
-        explanation: 'Transparent but careful communication maintains credibility while managing legal and security concerns.',
+        explanation: 'Sharing confirmed information maintains credibility.',
         hints: [
-          'Think about balancing transparency',
-          'Consider legal implications'
+          'Consider transparency',
+          'Think about accuracy'
         ]
       },
       {
-        question: 'What stakeholder groups should be prioritized in communications?',
+        question: 'What stakeholders should be prioritized?',
         options: [
           'Media only',
-          'Customers only',
-          'Prioritize based on impact and relationship',
+          'Random order',
+          'Based on impact and relationship',
           'Whoever asks first'
         ],
         correctAnswer: 2,
-        explanation: 'Strategic prioritization ensures critical stakeholders receive appropriate attention.',
+        explanation: 'Prioritizing based on impact ensures appropriate attention.',
         hints: [
           'Consider stakeholder importance',
-          'Think about business relationships'
+          'Think about relationships'
         ]
       },
       {
         question: 'How should media inquiries be managed?',
         options: [
-          'Ignore all media',
-          'Respond to each individually',
-          'Coordinate through designated spokesperson with prepared statements',
-          'Direct to website only'
+          'Ignore all',
+          'Individual responses',
+          'Coordinated through spokesperson',
+          'Automated responses'
         ],
         correctAnswer: 2,
-        explanation: 'Coordinated media response ensures consistent, accurate message delivery.',
+        explanation: 'Coordinated responses ensure consistent messaging.',
         hints: [
-          'Think about message control',
-          'Consider media management best practices'
+          'Consider message consistency',
+          'Think about media management'
         ]
       },
       {
-        question: 'What should be included in stakeholder updates?',
+        question: 'What should updates include?',
         options: [
-          'Technical details only',
-          'Estimated losses only',
-          'Progress, impact, and actions being taken',
-          'Promise of compensation'
+          'Technical details',
+          'All information',
+          'Relevant progress and actions',
+          'Minimal information'
         ],
         correctAnswer: 2,
-        explanation: 'Comprehensive but appropriate updates maintain stakeholder confidence and support.',
+        explanation: 'Relevant updates maintain transparency while protecting sensitive details.',
         hints: [
           'Consider information needs',
-          'Think about maintaining trust'
+          'Think about security'
         ]
       }
     ]
@@ -522,84 +619,84 @@ const riskCards: RiskCard[] = [
   {
     id: 'strategic',
     title: 'Strategic Impact',
-    description: 'Long-term business impact and recovery planning',
+    description: 'Long-term impact and planning',
     icon: <Target className="h-12 w-12 text-indigo-500" />,
-    impact: 'Business continuity and strategic objectives',
-    scenario: 'A technology company suffers a sophisticated ransomware attack that exposes weaknesses in their security infrastructure and business processes. Beyond immediate recovery, they must assess how this incident affects their five-year strategic plan, market position, customer trust, and digital transformation initiatives. The board demands a comprehensive review of strategic implications.',
+    impact: 'Organizational Strategy and Resilience',
+    scenario: 'The ransomware incident requires evaluation of long-term strategic implications. You must assess the impact on organizational strategy and develop plans for improved resilience.',
     questions: [
       {
-        question: 'What should be the focus of strategic impact assessment?',
+        question: 'What should strategic assessment focus on?',
         options: [
-          'Immediate technical fixes',
-          'Short-term financial losses',
-          'Long-term business implications and recovery strategy',
-          'System upgrade plans'
+          'Technical fixes only',
+          'Current issues only',
+          'Long-term impact and improvements',
+          'Cost cutting'
         ],
         correctAnswer: 2,
-        explanation: 'Focusing on long-term implications ensures comprehensive recovery and future resilience.',
+        explanation: 'Long-term focus ensures comprehensive improvements.',
         hints: [
-          'Think about future business impact',
-          'Consider organizational transformation'
+          'Consider future needs',
+          'Think about resilience'
         ]
       },
       {
-        question: 'How should strategic objectives be re-evaluated after the incident?',
+        question: 'How should strategic objectives be reviewed?',
         options: [
-          'Continue unchanged',
-          'Abandon all current objectives',
-          'Assess and adjust based on lessons learned and new risks',
-          'Focus only on security'
+          'No changes needed',
+          'Complete replacement',
+          'Evaluate and adjust as needed',
+          'Technical focus only'
         ],
         correctAnswer: 2,
-        explanation: 'Strategic objectives should evolve to incorporate incident learnings and strengthen resilience.',
+        explanation: 'Thoughtful evaluation ensures appropriate adjustments.',
         hints: [
-          'Consider organizational learning',
-          'Think about balanced adaptation'
+          'Consider current objectives',
+          'Think about necessary changes'
         ]
       },
       {
-        question: 'What aspects of business strategy need review after a ransomware attack?',
+        question: 'What areas need strategic review?',
         options: [
-          'Only IT security',
-          'Just disaster recovery',
-          'Comprehensive review of processes, technology, and business model',
-          'Financial plans only'
+          'Technical only',
+          'Security only',
+          'All affected areas and processes',
+          'Budget only'
         ],
         correctAnswer: 2,
-        explanation: 'A holistic review ensures all strategic aspects are strengthened against future threats.',
+        explanation: 'Comprehensive review ensures thorough improvements.',
         hints: [
-          'Think about organizational vulnerabilities',
-          'Consider business model implications'
+          'Consider all impacts',
+          'Think about interconnections'
         ]
       },
       {
-        question: 'How should strategic investments be prioritized post-incident?',
+        question: 'How should improvements be prioritized?',
         options: [
-          'All in security',
-          'Maintain previous plans',
-          'Balance security, resilience, and growth objectives',
-          'Focus on cost cutting'
+          'Lowest cost first',
+          'Quick fixes only',
+          'Based on risk and value',
+          'Random order'
         ],
         correctAnswer: 2,
-        explanation: 'Balanced investment ensures both security and business growth objectives are met.',
+        explanation: 'Risk-based prioritization ensures effective improvements.',
         hints: [
-          'Consider multiple business needs',
-          'Think about sustainable growth'
+          'Consider risk levels',
+          'Think about business value'
         ]
       },
       {
-        question: 'What timeframe should strategic recovery planning cover?',
+        question: 'What timeframe should planning cover?',
         options: [
-          'Next quarter only',
-          'Until systems are restored',
-          'Multi-year comprehensive planning',
-          'Next month only'
+          'Next month',
+          'Current quarter',
+          'Multi-year comprehensive plan',
+          'Next week'
         ],
         correctAnswer: 2,
-        explanation: 'Long-term planning ensures sustainable recovery and organizational transformation.',
+        explanation: 'Long-term planning ensures sustainable improvements.',
         hints: [
-          'Think about sustainable recovery',
-          'Consider long-term resilience'
+          'Consider future needs',
+          'Think about sustainability'
         ]
       }
     ]
@@ -743,13 +840,12 @@ function App() {
               <div className="text-center">
                 <Shield className="h-20 w-20 text-blue-500 dark:text-blue-600 mx-auto mb-8" />
                 <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-6">
-                  Ransomware Attack Scenario
+                  IT System - Ransomware Attack Scenario
                 </h1>
                 <p className="text-xl text-slate-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                  The SOC identified multiple reports of file inaccessibility and ransom notes appearing on file servers. 
-                  Employees encountered notifications indicating file encryption, while critical business applications ceased functioning. 
-                  Recognizing a potential ransomware attack, the SOC swiftly escalated the incident, implemented containment measures 
-                  to prevent further spread, and issued security advisories to alert affected teams.
+                  The Security Operations Center (SOC) has detected a sophisticated ransomware attack targeting critical IT systems. 
+                  Multiple endpoints are showing signs of encryption, and the attackers are demanding payment in cryptocurrency. 
+                  As the IT Security Lead, you must coordinate the incident response while ensuring business continuity and data protection.
                 </p>
               </div>
             </div>
@@ -769,9 +865,11 @@ function App() {
                     onClick={() => handleCardClick(card.id)}
                     whileHover={{ y: -5 }}
                   >
-                    {card.icon}
-                    <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{card.title}</h3>
-                    <p className="text-slate-700 dark:text-gray-300">{card.description}</p>
+                    <div>
+                      {card.icon}
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{card.title}</h3>
+                      <p className="text-slate-700 dark:text-gray-300">{card.description}</p>
+                    </div>
                   </motion.div>
                 ))}
               </div>
@@ -818,30 +916,83 @@ function App() {
                   </button>
                 </div>
 
-                <div className="bg-slate-100 dark:bg-slate-700 p-6 rounded-lg mb-8">
-                  <h4 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Scenario</h4>
-                  <p className="text-slate-700 dark:text-gray-300">
-                    {riskCards.find(c => c.id === selectedCard)?.scenario}
-                  </p>
-                </div>
+                {!showResults && (
+                  <div className="bg-slate-100 dark:bg-slate-700 p-6 rounded-lg mb-8">
+                    <h4 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Scenario</h4>
+                    <p className="text-slate-700 dark:text-gray-300">
+                      {riskCards.find(c => c.id === selectedCard)?.scenario}
+                    </p>
+                  </div>
+                )}
 
                 {showResults ? (
                   <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-6">
-                    <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Assessment Results</h4>
+                    <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Assessment Report</h4>
                     <div className="mb-6">
+                      <div className="bg-slate-200 dark:bg-slate-800 p-4 rounded-lg mb-4">
+                        <h5 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Summarized Report</h5>
+                        <p className="text-slate-700 dark:text-gray-300">
+                          {`You have completed ${riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management assessment. Your score is ${calculateTotalScore()}/25.${answeredQuestions.filter(isCorrect => !isCorrect).length > 0 ? ' Review the areas for improvement to strengthen your response strategy.' : ''}`}
+                        </p>
+                      </div>
                       <p className="text-xl text-slate-900 dark:text-white mb-4">
                         Score: {calculateTotalScore()} out of 25
                       </p>
-                      <p className="text-lg text-slate-700 dark:text-gray-300">
-                        {getPerformanceMessage(calculateTotalScore(), 25)}
-                      </p>
+                      
+                      <>
+                        <p className="text-lg text-green-600 dark:text-green-400 mb-4">
+                          Assessment Complete
+                        </p>
+                        <div className="mb-4">
+                          <p className="text-lg text-slate-900 dark:text-white mb-2">Performance Analysis:</p>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg">
+                              <p className="font-semibold mb-2 text-slate-900 dark:text-white">Correct Answers:</p>
+                              {answeredQuestions.map((isCorrect, index) => (
+                                isCorrect && (
+                                  <p key={index} className="text-green-600 dark:text-white">
+                                    ✓ Question {index + 1}
+                                  </p>
+                                )
+                              ))}
+                            </div>
+                            <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg">
+                              <p className="font-semibold mb-2 text-slate-900 dark:text-white">Areas for Improvement:</p>
+                              {answeredQuestions.map((isCorrect, index) => (
+                                !isCorrect && (
+                                  <div key={index} className="mb-2">
+                                    <p className="text-red-600 dark:text-white">
+                                      ✗ Question {index + 1}
+                                    </p>
+                                    <p className="text-slate-600 dark:text-white text-sm">
+                                      {riskCards.find(c => c.id === selectedCard)?.questions[index].explanation}
+                                    </p>
+                                  </div>
+                                )
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                        {selectedCard !== riskCards[riskCards.length - 1].id ? (
+                          <button
+                            onClick={() => {
+                              const currentIndex = riskCards.findIndex(c => c.id === selectedCard);
+                              handleCardClick(riskCards[currentIndex + 1].id);
+                            }}
+                            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full"
+                          >
+                            Next Risk Card
+                          </button>
+                        ) : (
+                          <button
+                            onClick={() => setSelectedCard(null)}
+                            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full"
+                          >
+                            Return to Main Page
+                          </button>
+                        )}
+                      </>
                     </div>
-                    <button
-                      onClick={handleRestartQuiz}
-                      className="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-full"
-                    >
-                      Restart Assessment
-                    </button>
                   </div>
                 ) : (
                   <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-6">
@@ -862,6 +1013,7 @@ function App() {
 
                       {showHint && (
                         <div className="bg-blue-100/50 dark:bg-blue-900/50 p-4 rounded-lg mb-4 animate-fade-in">
+                          <p className="text-blue-900 dark:text-blue-200 font-semibold">Hint:</p>
                           <p className="text-blue-900 dark:text-blue-200">
                             {riskCards.find(c => c.id === selectedCard)?.questions[currentQuestionIndex].hints?.[hintCounts[currentQuestionIndex] - 1]}
                           </p>
@@ -900,8 +1052,9 @@ function App() {
                     </div>
 
                     {selectedAnswer !== null && (
-                      <div className="mb-6 p-4 bg-slate-200 dark:bg-slate-600 rounded-lg">
-                        <p className="text-slate-900 dark:text-gray-200">
+                      <div className="mb-6 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
+                        <p className="text-blue-900 dark:text-blue-100 font-semibold">Right Approach:</p>
+                        <p className="text-blue-800 dark:text-blue-200">
                           {riskCards.find(c => c.id === selectedCard)?.questions[currentQuestionIndex].explanation}
                         </p>
                       </div>
