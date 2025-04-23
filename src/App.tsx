@@ -24,58 +24,58 @@ const riskCards: RiskCard[] = [
   {
     id: 'operational',
     title: 'Operational Disruption',
-    description: 'Coordinate responses to system outages and service disruptions',
+    description: 'Manage legal operations during system outages and service disruptions',
     icon: <Building2 className="h-12 w-12 text-red-500" />,
-    impact: 'System Availability and Business Operations',
-    scenario: 'As IT Security Lead, you discover that ransomware has encrypted multiple critical systems including file servers, databases, and application servers. The attack has halted all business operations, affecting system availability and service delivery. You must quickly address the disruption while maintaining security.',
+    impact: 'Legal Operations and Client Services',
+    scenario: 'As Legal Division Lead, you discover that ransomware has encrypted critical legal case management systems, client files, and court document repositories. The attack has halted all legal operations, affecting case management and client services. You must quickly address the disruption while maintaining legal obligations and client confidentiality.',
     questions: [
       {
-        question: 'What should be your first priority when operations are disrupted?',
+        question: 'What should be your first priority when legal operations are disrupted?',
         options: [
-          'Continue normal operations',
-          'Assess and isolate affected systems',
-          'Contact all departments',
+          'Continue normal legal proceedings',
+          'Assess impact on active cases and client obligations',
+          'Contact all clients immediately',
           'Start system restoration'
         ],
         correctAnswer: 1,
-        explanation: 'Assessing and isolating affected systems helps contain the incident while understanding its scope.',
+        explanation: 'Assessing impact on active cases helps prioritize critical legal obligations while understanding the scope of disruption.',
         hints: [
-          'Consider incident containment',
-          'Think about impact assessment'
+          'Consider legal obligations',
+          'Think about client impact'
         ]
       },
       {
-        question: 'How should you prioritize operational recovery?',
+        question: 'How should you prioritize legal operations recovery?',
         options: [
           'Recover all systems simultaneously',
-          'Start with non-critical systems',
-          'Prioritize based on business impact and dependencies',
+          'Start with non-critical cases',
+          'Prioritize based on court deadlines and client impact',
           'Wait for complete investigation'
         ],
         correctAnswer: 2,
-        explanation: 'Prioritizing based on business impact ensures critical operations are restored first.',
+        explanation: 'Prioritizing based on court deadlines ensures critical legal obligations are met first.',
         hints: [
-          'Consider business continuity',
-          'Think about system dependencies'
+          'Consider court deadlines',
+          'Think about client impact'
         ]
       },
       {
-        question: 'What operational channels should be used during the incident?',
+        question: 'What communication channels should be used during the incident?',
         options: [
           'Regular email system',
           'Public announcement system',
-          'Secure incident response channels',
+          'Secure legal communication channels',
           'Social media platforms'
         ],
         correctAnswer: 2,
-        explanation: 'Secure incident response channels ensure operational coordination while maintaining security.',
+        explanation: 'Secure legal communication channels ensure client confidentiality while maintaining necessary communications.',
         hints: [
-          'Consider secure communications',
-          'Think about coordination needs'
+          'Consider attorney-client privilege',
+          'Think about confidentiality requirements'
         ]
       },
       {
-        question: 'How should operational access be managed during the incident?',
+        question: 'How should access to legal documents be managed during the incident?',
         options: [
           'Maintain all access levels',
           'Revoke all access',
@@ -83,25 +83,25 @@ const riskCards: RiskCard[] = [
           'Delegate access decisions'
         ],
         correctAnswer: 2,
-        explanation: 'Strict access controls with monitoring help maintain security while enabling necessary operations.',
+        explanation: 'Strict access controls with monitoring help maintain client confidentiality while enabling necessary legal work.',
         hints: [
-          'Consider access requirements',
-          'Think about security controls'
+          'Consider confidentiality requirements',
+          'Think about legal obligations'
         ]
       },
       {
-        question: 'What operational documentation should be maintained?',
+        question: 'What documentation should be maintained for legal purposes?',
         options: [
           'Only final resolution steps',
           'No documentation needed',
-          'Comprehensive incident timeline and actions',
+          'Comprehensive incident timeline and legal impact assessment',
           'Only system logs'
         ],
         correctAnswer: 2,
-        explanation: 'Comprehensive documentation helps track the incident and improve future response.',
+        explanation: 'Comprehensive documentation helps track the incident and may be required for legal proceedings.',
         hints: [
-          'Consider incident tracking',
-          'Think about lessons learned'
+          'Consider legal requirements',
+          'Think about potential litigation'
         ]
       }
     ]
@@ -109,24 +109,24 @@ const riskCards: RiskCard[] = [
   {
     id: 'ransom',
     title: 'Ransom Pay',
-    description: 'Handle ransom demands and payment considerations',
+    description: 'Handle ransom demands and legal considerations',
     icon: <Banknote className="h-12 w-12 text-yellow-500" />,
-    impact: 'Financial Impact and Data Recovery',
-    scenario: 'The attackers have demanded a significant ransom payment in cryptocurrency to provide decryption keys. You must evaluate the ransom demand while considering data recovery options and organizational impact.',
+    impact: 'Legal Implications and Data Protection',
+    scenario: 'The attackers have demanded a significant ransom payment in cryptocurrency to provide decryption keys for sensitive legal documents and client files. You must evaluate the ransom demand while considering legal obligations, client confidentiality, and regulatory requirements.',
     questions: [
       {
         question: 'What is your first step in evaluating the ransom demand?',
         options: [
           'Calculate payment amount',
-          'Assess data recovery capabilities and impact',
+          'Assess legal obligations and regulatory requirements',
           'Prepare cryptocurrency wallet',
           'Contact attackers immediately'
         ],
         correctAnswer: 1,
-        explanation: 'Assessing recovery capabilities helps determine if payment is necessary.',
+        explanation: 'Assessing legal obligations helps determine appropriate response while maintaining compliance.',
         hints: [
-          'Consider backup availability',
-          'Think about recovery options'
+          'Consider regulatory requirements',
+          'Think about legal obligations'
         ]
       },
       {
@@ -134,44 +134,44 @@ const riskCards: RiskCard[] = [
         options: [
           'Screenshot ransom note only',
           'Ignore documentation',
-          'Maintain comprehensive decision records',
+          'Maintain comprehensive legal decision records',
           'Only record payment details'
         ],
         correctAnswer: 2,
-        explanation: 'Complete documentation protects the organization and informs future decisions.',
+        explanation: 'Complete documentation protects the organization and may be required for legal proceedings.',
         hints: [
           'Consider legal requirements',
-          'Think about decision tracking'
+          'Think about potential litigation'
         ]
       },
       {
         question: 'What factors should NOT primarily influence payment decision?',
         options: [
-          'Data recovery options',
-          'Business impact',
+          'Legal obligations',
+          'Regulatory requirements',
           'Ransom amount alone',
-          'Legal implications'
+          'Client impact'
         ],
         correctAnswer: 2,
-        explanation: 'The ransom amount alone should not drive the decision; consider all factors.',
+        explanation: 'The ransom amount alone should not drive the decision; consider all legal and regulatory factors.',
         hints: [
           'Consider multiple factors',
-          'Think about long-term impact'
+          'Think about legal implications'
         ]
       },
       {
-        question: 'What preparations are needed before any payment decision?',
+        question: 'What legal preparations are needed before any payment decision?',
         options: [
           'Just cryptocurrency setup',
-          'Complete impact and recovery assessment',
+          'Complete legal and regulatory assessment',
           'Draft public statement',
           'Budget allocation only'
         ],
         correctAnswer: 1,
-        explanation: 'A thorough assessment helps make an informed payment decision.',
+        explanation: 'A thorough legal assessment helps make an informed payment decision.',
         hints: [
-          'Consider assessment needs',
-          'Think about decision factors'
+          'Consider regulatory requirements',
+          'Think about legal obligations'
         ]
       },
       {
@@ -179,14 +179,14 @@ const riskCards: RiskCard[] = [
         options: [
           'Accept first demand',
           'Ignore all demands',
-          'Follow established incident response procedures',
+          'Follow established legal procedures',
           'Make counter-offers'
         ],
         correctAnswer: 2,
-        explanation: 'Following procedures ensures consistent and appropriate handling of demands.',
+        explanation: 'Following legal procedures ensures compliance with regulations and protects client interests.',
         hints: [
-          'Consider response protocols',
-          'Think about negotiation risks'
+          'Consider legal protocols',
+          'Think about regulatory requirements'
         ]
       }
     ]
@@ -194,24 +194,24 @@ const riskCards: RiskCard[] = [
   {
     id: 'financial',
     title: 'Financial Loss',
-    description: 'Assessment and management of incident-related costs',
+    description: 'Assessment and management of legal costs and liabilities',
     icon: <AlertTriangle className="h-12 w-12 text-orange-500" />,
-    impact: 'Financial Impact and Recovery Costs',
-    scenario: 'The ransomware incident has caused significant financial impact through system downtime, recovery costs, and potential data loss. You need to assess and manage these financial implications while planning recovery efforts.',
+    impact: 'Legal Costs and Liability Management',
+    scenario: 'The ransomware incident has caused significant financial impact through legal operations downtime, potential client claims, and regulatory penalties. You need to assess and manage these financial implications while maintaining legal obligations.',
     questions: [
       {
         question: 'How should you assess the financial impact?',
         options: [
           'Only direct costs',
           'Wait until resolution',
-          'Comprehensive cost and impact analysis',
+          'Comprehensive legal and financial analysis',
           'Basic damage estimate'
         ],
         correctAnswer: 2,
-        explanation: 'A comprehensive analysis helps understand full financial implications.',
+        explanation: 'A comprehensive analysis helps understand full financial and legal implications.',
         hints: [
           'Consider all cost types',
-          'Think about long-term impact'
+          'Think about potential liabilities'
         ]
       },
       {
@@ -219,14 +219,14 @@ const riskCards: RiskCard[] = [
         options: [
           'Only system repairs',
           'Just overtime costs',
-          'All direct and indirect costs including recovery',
+          'All direct costs, potential claims, and regulatory penalties',
           'Hardware costs only'
         ],
         correctAnswer: 2,
-        explanation: 'Including all costs ensures accurate impact assessment.',
+        explanation: 'Including all potential costs ensures accurate impact assessment.',
         hints: [
-          'Consider hidden costs',
-          'Think about recovery expenses'
+          'Consider potential claims',
+          'Think about regulatory penalties'
         ]
       },
       {
@@ -234,44 +234,44 @@ const riskCards: RiskCard[] = [
         options: [
           'Lowest cost options',
           'Most expensive solutions',
-          'Based on business impact and effectiveness',
+          'Based on legal obligations and client impact',
           'Equal distribution'
         ],
         correctAnswer: 2,
-        explanation: 'Prioritizing based on impact ensures effective use of resources.',
+        explanation: 'Prioritizing based on legal obligations ensures compliance and client protection.',
         hints: [
-          'Consider cost-benefit',
-          'Think about critical needs'
+          'Consider legal requirements',
+          'Think about client impact'
         ]
       },
       {
-        question: 'What financial documentation is crucial?',
+        question: 'What financial documentation is crucial for legal purposes?',
         options: [
           'Only invoices',
-          'Basic summaries',
-          'Detailed records of all costs and decisions',
-          'Budget reports only'
+          'Just payment records',
+          'Comprehensive financial impact and legal cost documentation',
+          'Basic expense tracking'
         ],
         correctAnswer: 2,
-        explanation: 'Detailed documentation supports insurance claims and future planning.',
+        explanation: 'Complete documentation helps track costs and may be required for legal proceedings.',
         hints: [
-          'Consider insurance needs',
-          'Think about audit requirements'
+          'Consider legal requirements',
+          'Think about potential claims'
         ]
       },
       {
-        question: 'How should budget adjustments be handled?',
+        question: 'How should potential client claims be handled?',
         options: [
-          'Cut all spending',
-          'Ignore budget limits',
-          'Strategic reallocation based on priorities',
-          'Maintain current budget'
+          'Ignore until formal claim',
+          'Proactively assess and document',
+          'Wait for client complaints',
+          'Assume no claims will occur'
         ],
-        correctAnswer: 2,
-        explanation: 'Strategic reallocation ensures critical needs are met while managing costs.',
+        correctAnswer: 1,
+        explanation: 'Proactive assessment helps prepare for potential claims and protect the organization.',
         hints: [
-          'Consider critical needs',
-          'Think about resource allocation'
+          'Consider client impact',
+          'Think about legal protection'
         ]
       }
     ]
@@ -362,341 +362,341 @@ const riskCards: RiskCard[] = [
     ]
   },
   {
-    id: 'regulatory',
-    title: 'Regulatory Notification',
-    description: 'Compliance with notification requirements',
-    icon: <Bell className="h-12 w-12 text-purple-500" />,
-    impact: 'Compliance and Legal Obligations',
-    scenario: 'The ransomware incident requires notifications to various regulatory bodies due to potential data exposure. You must ensure compliance with all applicable notification requirements while managing the ongoing incident.',
+    id: 'reputation',
+    title: 'Reputation Damage',
+    description: 'Manage legal reputation and client trust',
+    icon: <Users className="h-12 w-12 text-blue-500" />,
+    impact: 'Client Trust and Legal Standing',
+    scenario: "The ransomware attack has compromised sensitive client information and disrupted legal services. News of the incident is spreading, potentially damaging the legal division's reputation and client trust. You must manage the situation while protecting client interests and maintaining professional obligations.",
     questions: [
       {
-        question: 'When should regulatory authorities be notified?',
+        question: 'What should be your first communication priority?',
         options: [
-          'Only after resolution',
-          'Within required notification timeframes',
-          'After public disclosure',
-          'When asked by regulators'
+          'Public statement to media',
+          'Direct communication with affected clients',
+          'Internal staff announcement',
+          'Social media update'
         ],
         correctAnswer: 1,
-        explanation: 'Timely notification within required timeframes ensures compliance.',
+        explanation: 'Direct client communication maintains trust and fulfills legal obligations.',
         hints: [
-          'Consider legal deadlines',
-          'Think about notification requirements'
+          'Consider client obligations',
+          'Think about confidentiality'
         ]
       },
       {
-        question: 'What information must be included in notifications?',
+        question: 'How should client concerns be addressed?',
         options: [
-          'Basic incident details',
-          'Technical analysis only',
-          'Required information per regulations',
-          'System status only'
+          'Generic responses',
+          'Individual case-by-case assessment',
+          'Standard template',
+          'Defer to management'
+        ],
+        correctAnswer: 1,
+        explanation: "Individual assessment ensures proper handling of each client's situation.",
+        hints: [
+          'Consider client impact',
+          'Think about legal obligations'
+        ]
+      },
+      {
+        question: 'What information should be included in client communications?',
+        options: [
+          'Full technical details',
+          'Only necessary legal information',
+          'Complete incident report',
+          'No information'
+        ],
+        correctAnswer: 1,
+        explanation: 'Providing necessary legal information maintains transparency while protecting interests.',
+        hints: [
+          'Consider legal requirements',
+          'Think about client needs'
+        ]
+      },
+      {
+        question: 'How should media inquiries be handled?',
+        options: [
+          'Full disclosure',
+          'No comment',
+          'Through legal communications team',
+          'Direct responses'
         ],
         correctAnswer: 2,
-        explanation: 'Including required information ensures regulatory compliance.',
+        explanation: 'Legal communications team ensures consistent and appropriate messaging.',
+        hints: [
+          'Consider legal implications',
+          'Think about client confidentiality'
+        ]
+      },
+      {
+        question: 'What reputation recovery steps are most important?',
+        options: [
+          'Marketing campaign',
+          'Demonstrating legal compliance and client protection',
+          'Price reductions',
+          'Staff changes'
+        ],
+        correctAnswer: 1,
+        explanation: 'Demonstrating compliance and protection rebuilds trust effectively.',
+        hints: [
+          'Consider legal obligations',
+          'Think about client trust'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'regulatory',
+    title: 'Regulatory Compliance',
+    description: 'Ensure compliance with legal and regulatory requirements',
+    icon: <Shield className="h-12 w-12 text-green-500" />,
+    impact: 'Legal Compliance and Reporting',
+    scenario: 'The ransomware attack has potentially compromised client confidentiality and affected legal operations. You must ensure compliance with legal regulations, reporting requirements, and professional obligations while managing the incident.',
+    questions: [
+      {
+        question: 'What is your first regulatory compliance step?',
+        options: [
+          'Wait for regulator inquiry',
+          'Assess regulatory reporting requirements',
+          'Contact all regulators',
+          'Internal review only'
+        ],
+        correctAnswer: 1,
+        explanation: 'Assessing requirements ensures timely and appropriate regulatory compliance.',
+        hints: [
+          'Consider reporting deadlines',
+          'Think about regulatory obligations'
+        ]
+      },
+      {
+        question: 'How should regulatory documentation be prepared?',
+        options: [
+          'Basic summary',
+          'Comprehensive legal and technical documentation',
+          'Informal notes',
+          'Verbal report'
+        ],
+        correctAnswer: 1,
+        explanation: 'Comprehensive documentation ensures proper regulatory compliance.',
+        hints: [
+          'Consider legal requirements',
+          'Think about documentation standards'
+        ]
+      },
+      {
+        question: 'What regulatory notifications are required?',
+        options: [
+          'All possible regulators',
+          'Only mandatory notifications',
+          'No notifications',
+          'Selected regulators'
+        ],
+        correctAnswer: 1,
+        explanation: 'Focusing on mandatory notifications ensures proper compliance.',
+        hints: [
+          'Consider legal requirements',
+          'Think about notification obligations'
+        ]
+      },
+      {
+        question: 'How should regulatory interactions be managed?',
+        options: [
+          'Direct communication',
+          'Through legal counsel',
+          'Informal discussions',
+          'Written responses only'
+        ],
+        correctAnswer: 1,
+        explanation: 'Legal counsel ensures proper handling of regulatory matters.',
+        hints: [
+          'Consider legal implications',
+          'Think about professional standards'
+        ]
+      },
+      {
+        question: 'What compliance monitoring should be implemented?',
+        options: [
+          'Basic checks',
+          'Enhanced legal and regulatory monitoring',
+          'No changes needed',
+          'External audit only'
+        ],
+        correctAnswer: 1,
+        explanation: 'Enhanced monitoring helps maintain ongoing compliance.',
         hints: [
           'Consider regulatory requirements',
-          'Think about notification content'
-        ]
-      },
-      {
-        question: 'How should multiple regulations be handled?',
-        options: [
-          'Follow strictest only',
-          'Choose one regulation',
-          'Comply with all applicable requirements',
-          'Minimum compliance only'
-        ],
-        correctAnswer: 2,
-        explanation: 'Meeting all applicable requirements ensures full compliance.',
-        hints: [
-          'Consider all obligations',
-          'Think about overlapping requirements'
-        ]
-      },
-      {
-        question: 'What documentation should be maintained?',
-        options: [
-          'Notification copies only',
-          'Basic records only',
-          'Comprehensive compliance records',
-          'System logs only'
-        ],
-        correctAnswer: 2,
-        explanation: 'Complete documentation demonstrates compliance efforts.',
-        hints: [
-          'Consider audit needs',
-          'Think about compliance proof'
-        ]
-      },
-      {
-        question: 'How should ongoing regulatory updates be managed?',
-        options: [
-          'Wait for requests',
-          'Minimal updates',
-          'Proactive communication and updates',
-          'Final report only'
-        ],
-        correctAnswer: 2,
-        explanation: 'Proactive updates maintain good regulatory relationships.',
-        hints: [
-          'Consider regulator needs',
-          'Think about ongoing compliance'
+          'Think about continuous compliance'
         ]
       }
     ]
   },
   {
-    id: 'employee',
-    title: 'Employee Notification',
-    description: 'Internal communication and staff updates',
-    icon: <Users className="h-12 w-12 text-blue-500" />,
-    impact: 'Staff Awareness and Response',
-    scenario: 'Employees need to be informed about the ransomware incident and their role in the response. You must manage internal communications while ensuring security and maintaining operational effectiveness.',
+    id: 'data',
+    title: 'Data Protection',
+    description: 'Safeguard legal documents and client information',
+    icon: <Lock className="h-12 w-12 text-purple-500" />,
+    impact: 'Client Confidentiality and Data Security',
+    scenario: 'The ransomware attack has potentially compromised sensitive legal documents and client information. You must ensure the protection of privileged communications and confidential data while maintaining legal obligations and client trust.',
     questions: [
       {
-        question: 'What should employees be told initially?',
+        question: 'What is your first data protection priority?',
         options: [
-          'Technical details only',
-          'Clear instructions and immediate actions',
-          'System names only',
-          'Complete investigation results'
+          'System restoration',
+          'Assess data exposure and legal implications',
+          'Contact all clients',
+          'Public announcement'
         ],
         correctAnswer: 1,
-        explanation: 'Clear instructions help employees respond appropriately.',
+        explanation: 'Assessing exposure helps determine necessary protective measures.',
         hints: [
-          'Consider immediate needs',
-          'Think about action items'
+          'Consider client confidentiality',
+          'Think about legal obligations'
         ]
       },
       {
-        question: 'How should employee communications be prioritized?',
+        question: 'How should compromised data be handled?',
         options: [
-          'All at once',
-          'Random order',
-          'Based on impact and role',
-          'Alphabetical order'
+          'Ignore if encrypted',
+          'Comprehensive legal assessment and notification',
+          'Basic cleanup',
+          'System reset'
         ],
-        correctAnswer: 2,
-        explanation: 'Prioritizing by impact ensures critical staff are informed first.',
+        correctAnswer: 1,
+        explanation: 'Comprehensive assessment ensures proper handling of compromised data.',
         hints: [
-          'Consider role importance',
-          'Think about response needs'
+          'Consider legal requirements',
+          'Think about client impact'
         ]
       },
       {
-        question: 'What communication channels should be used?',
+        question: 'What data protection measures should be implemented?',
         options: [
-          'Email only',
-          'Phone only',
-          'Multiple secure channels',
-          'Public channels'
-        ],
-        correctAnswer: 2,
-        explanation: 'Multiple secure channels ensure reliable communication.',
-        hints: [
-          'Consider security needs',
-          'Think about reliability'
-        ]
-      },
-      {
-        question: 'How should employee questions be handled?',
-        options: [
-          'Ignore questions',
-          'Individual responses',
-          'Structured response system',
-          'Defer all questions'
-        ],
-        correctAnswer: 2,
-        explanation: 'A structured system ensures consistent and efficient responses.',
-        hints: [
-          'Consider response efficiency',
-          'Think about consistency'
-        ]
-      },
-      {
-        question: 'What ongoing updates should be provided?',
-        options: [
-          'None needed',
-          'Technical only',
-          'Regular status and action updates',
-          'Final resolution only'
-        ],
-        correctAnswer: 2,
-        explanation: 'Regular updates maintain awareness and engagement.',
-        hints: [
-          'Consider information needs',
-          'Think about ongoing awareness'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'crisis',
-    title: 'Crisis Communication',
-    description: 'External stakeholder communication',
-    icon: <MessageSquare className="h-12 w-12 text-green-500" />,
-    impact: 'Public Relations and Trust',
-    scenario: 'The ransomware incident requires careful communication with external stakeholders. You must manage public relations while protecting sensitive information and maintaining stakeholder confidence.',
-    questions: [
-      {
-        question: 'Who should handle external communications?',
-        options: [
-          'IT staff',
-          'Any manager',
-          'Designated communication team',
-          'Security team'
-        ],
-        correctAnswer: 2,
-        explanation: 'A designated team ensures consistent and appropriate messaging.',
-        hints: [
-          'Consider message control',
-          'Think about consistency'
-        ]
-      },
-      {
-        question: 'How should initial statements be handled?',
-        options: [
-          'Share all details',
-          'No comment',
-          'Confirmed facts and actions',
-          'Deny incident'
-        ],
-        correctAnswer: 2,
-        explanation: 'Sharing confirmed information maintains credibility.',
-        hints: [
-          'Consider transparency',
-          'Think about accuracy'
-        ]
-      },
-      {
-        question: 'What stakeholders should be prioritized?',
-        options: [
-          'Media only',
-          'Random order',
-          'Based on impact and relationship',
-          'Whoever asks first'
-        ],
-        correctAnswer: 2,
-        explanation: 'Prioritizing based on impact ensures appropriate attention.',
-        hints: [
-          'Consider stakeholder importance',
-          'Think about relationships'
-        ]
-      },
-      {
-        question: 'How should media inquiries be managed?',
-        options: [
-          'Ignore all',
-          'Individual responses',
-          'Coordinated through spokesperson',
-          'Automated responses'
-        ],
-        correctAnswer: 2,
-        explanation: 'Coordinated responses ensure consistent messaging.',
-        hints: [
-          'Consider message consistency',
-          'Think about media management'
-        ]
-      },
-      {
-        question: 'What should updates include?',
-        options: [
-          'Technical details',
-          'All information',
-          'Relevant progress and actions',
-          'Minimal information'
-        ],
-        correctAnswer: 2,
-        explanation: 'Relevant updates maintain transparency while protecting sensitive details.',
-        hints: [
-          'Consider information needs',
-          'Think about security'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'strategic',
-    title: 'Strategic Impact',
-    description: 'Long-term impact and planning',
-    icon: <Target className="h-12 w-12 text-indigo-500" />,
-    impact: 'Organizational Strategy and Resilience',
-    scenario: 'The ransomware incident requires evaluation of long-term strategic implications. You must assess the impact on organizational strategy and develop plans for improved resilience.',
-    questions: [
-      {
-        question: 'What should strategic assessment focus on?',
-        options: [
-          'Technical fixes only',
-          'Current issues only',
-          'Long-term impact and improvements',
-          'Cost cutting'
-        ],
-        correctAnswer: 2,
-        explanation: 'Long-term focus ensures comprehensive improvements.',
-        hints: [
-          'Consider future needs',
-          'Think about resilience'
-        ]
-      },
-      {
-        question: 'How should strategic objectives be reviewed?',
-        options: [
+          'Basic security',
+          'Enhanced legal data protection controls',
           'No changes needed',
-          'Complete replacement',
-          'Evaluate and adjust as needed',
-          'Technical focus only'
+          'External monitoring only'
         ],
-        correctAnswer: 2,
-        explanation: 'Thoughtful evaluation ensures appropriate adjustments.',
+        correctAnswer: 1,
+        explanation: 'Enhanced controls help protect sensitive legal information.',
         hints: [
-          'Consider current objectives',
-          'Think about necessary changes'
+          'Consider confidentiality requirements',
+          'Think about data protection'
         ]
       },
       {
-        question: 'What areas need strategic review?',
+        question: 'How should data access be managed?',
         options: [
-          'Technical only',
-          'Security only',
-          'All affected areas and processes',
-          'Budget only'
+          'Open access',
+          'Strict legal need-to-know basis',
+          'Department-level access',
+          'No restrictions'
         ],
-        correctAnswer: 2,
-        explanation: 'Comprehensive review ensures thorough improvements.',
+        correctAnswer: 1,
+        explanation: 'Need-to-know basis maintains proper confidentiality.',
         hints: [
-          'Consider all impacts',
-          'Think about interconnections'
+          'Consider attorney-client privilege',
+          'Think about access controls'
         ]
       },
       {
-        question: 'How should improvements be prioritized?',
+        question: 'What documentation is needed for data protection?',
         options: [
-          'Lowest cost first',
-          'Quick fixes only',
-          'Based on risk and value',
-          'Random order'
+          'Basic logs',
+          'Comprehensive legal data protection records',
+          'No documentation',
+          'System reports only'
         ],
-        correctAnswer: 2,
-        explanation: 'Risk-based prioritization ensures effective improvements.',
+        correctAnswer: 1,
+        explanation: 'Comprehensive records support legal compliance and protection.',
         hints: [
-          'Consider risk levels',
-          'Think about business value'
+          'Consider legal requirements',
+          'Think about documentation needs'
+        ]
+      }
+    ]
+  },
+  {
+    id: 'recovery',
+    title: 'Recovery Planning',
+    description: 'Develop legal recovery and continuity strategies',
+    icon: <CheckCircle className="h-12 w-12 text-teal-500" />,
+    impact: 'Legal Service Continuity',
+    scenario: 'Following the ransomware attack, you must develop and implement recovery plans that ensure the continuity of legal services while maintaining client confidentiality and meeting legal obligations. The focus is on restoring critical legal operations and protecting client interests.',
+    questions: [
+      {
+        question: 'What should be the first recovery priority?',
+        options: [
+          'All systems',
+          'Critical legal operations and client services',
+          'Non-essential services',
+          'External systems'
+        ],
+        correctAnswer: 1,
+        explanation: 'Focusing on critical operations ensures essential legal services continue.',
+        hints: [
+          'Consider legal obligations',
+          'Think about client impact'
         ]
       },
       {
-        question: 'What timeframe should planning cover?',
+        question: 'How should recovery resources be allocated?',
         options: [
-          'Next month',
-          'Current quarter',
-          'Multi-year comprehensive plan',
-          'Next week'
+          'Equal distribution',
+          'Based on legal priorities and client impact',
+          'First-come-first-served',
+          'External priority'
         ],
-        correctAnswer: 2,
-        explanation: 'Long-term planning ensures sustainable improvements.',
+        correctAnswer: 1,
+        explanation: 'Priority-based allocation ensures critical legal needs are met.',
         hints: [
-          'Consider future needs',
-          'Think about sustainability'
+          'Consider legal requirements',
+          'Think about client impact'
+        ]
+      },
+      {
+        question: 'What recovery documentation is essential?',
+        options: [
+          'Basic notes',
+          'Comprehensive legal recovery plans',
+          'No documentation',
+          'System logs only'
+        ],
+        correctAnswer: 1,
+        explanation: 'Comprehensive plans ensure proper legal service recovery.',
+        hints: [
+          'Consider legal requirements',
+          'Think about recovery needs'
+        ]
+      },
+      {
+        question: 'How should recovery progress be communicated?',
+        options: [
+          'Public updates',
+          'Targeted legal client communications',
+          'No updates',
+          'Social media'
+        ],
+        correctAnswer: 1,
+        explanation: 'Targeted communications maintain client trust and legal obligations.',
+        hints: [
+          'Consider client needs',
+          'Think about confidentiality'
+        ]
+      },
+      {
+        question: 'What recovery validation is required?',
+        options: [
+          'Basic check',
+          'Comprehensive legal and operational validation',
+          'No validation',
+          'External audit only'
+        ],
+        correctAnswer: 1,
+        explanation: 'Comprehensive validation ensures proper legal service restoration.',
+        hints: [
+          'Consider legal requirements',
+          'Think about service quality'
         ]
       }
     ]
@@ -840,7 +840,7 @@ function App() {
               <div className="text-center">
                 <Shield className="h-20 w-20 text-blue-500 dark:text-blue-600 mx-auto mb-8" />
                 <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-6">
-                  IT System - Ransomware Attack Scenario
+                  Legal Division - Ransomware Attack Scenario
                 </h1>
                 <p className="text-xl text-slate-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
                   The Security Operations Center (SOC) has detected a sophisticated ransomware attack targeting critical IT systems. 
