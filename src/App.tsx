@@ -1,806 +1,256 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, Lock, BookOpen, ArrowRight, Shield as ShieldIcon, Building2, Banknote, Bell, Users, MessageSquare, Target, CheckCircle, XCircle } from 'lucide-react';
+import { Shield, AlertTriangle, Lock, BookOpen, ArrowRight, Shield as ShieldIcon, Building2, Banknote, Bell, Users, MessageSquare, Target, CheckCircle, XCircle, UserCog, BarChart2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingNav } from './components/ui/floating-navbar';
 import GridBackgroundDemo from './components/ui/grid-background-demo';
+import RoleCard from './components/RoleCard';
+import { riskCards, RiskCard, Question } from './lib/roleData';
+import { RiskCardIcon } from './components/RiskCardIcon';
+import { assessmentStore, AssessmentData } from './lib/assessmentStore';
+import { Analytics } from './components/Analytics';
+import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
 
-interface RiskCard {
-  id: string;
-  title: string;
-  description: string;
-  icon: React.ReactNode;
-  impact: string;
-  scenario?: string;
-  questions: {
-    question: string;
-    options: string[];
-    correctAnswer: number;
-    explanation: string;
-    hints?: string[];
-  }[];
+
+function shuffleArray<T>(array: T[]): T[] {
+  let currentIndex = array.length, randomIndex;
+  while (currentIndex !== 0) {
+    randomIndex = Math.floor(Math.random() * currentIndex);
+    currentIndex--;
+    [array[currentIndex], array[randomIndex]] = [
+      array[randomIndex], array[currentIndex]];
+  }
+  return array;
 }
 
-const riskCards: RiskCard[] = [
-  {
-    id: 'operational',
-    title: 'Operational Disruption',
-    description: 'Manage legal operations during system outages and service disruptions',
-    icon: <Building2 className="h-12 w-12 text-red-500" />,
-    impact: 'Legal Operations and Client Services',
-    scenario: 'As Legal Division Lead, you discover that ransomware has encrypted critical legal case management systems, client files, and court document repositories. The attack has halted all legal operations, affecting case management and client services. You must quickly address the disruption while maintaining legal obligations and client confidentiality.',
-    questions: [
-      {
-        question: 'What should be your first priority when legal operations are disrupted?',
-        options: [
-          'Continue normal legal proceedings',
-          'Assess impact on active cases and client obligations',
-          'Contact all clients immediately',
-          'Start system restoration'
-        ],
-        correctAnswer: 1,
-        explanation: 'Assessing impact on active cases helps prioritize critical legal obligations while understanding the scope of disruption.',
-        hints: [
-          'Consider legal obligations',
-          'Think about client impact'
-        ]
-      },
-      {
-        question: 'How should you prioritize legal operations recovery?',
-        options: [
-          'Recover all systems simultaneously',
-          'Start with non-critical cases',
-          'Prioritize based on court deadlines and client impact',
-          'Wait for complete investigation'
-        ],
-        correctAnswer: 2,
-        explanation: 'Prioritizing based on court deadlines ensures critical legal obligations are met first.',
-        hints: [
-          'Consider court deadlines',
-          'Think about client impact'
-        ]
-      },
-      {
-        question: 'What communication channels should be used during the incident?',
-        options: [
-          'Regular email system',
-          'Public announcement system',
-          'Secure legal communication channels',
-          'Social media platforms'
-        ],
-        correctAnswer: 2,
-        explanation: 'Secure legal communication channels ensure client confidentiality while maintaining necessary communications.',
-        hints: [
-          'Consider attorney-client privilege',
-          'Think about confidentiality requirements'
-        ]
-      },
-      {
-        question: 'How should access to legal documents be managed during the incident?',
-        options: [
-          'Maintain all access levels',
-          'Revoke all access',
-          'Implement strict access controls with monitoring',
-          'Delegate access decisions'
-        ],
-        correctAnswer: 2,
-        explanation: 'Strict access controls with monitoring help maintain client confidentiality while enabling necessary legal work.',
-        hints: [
-          'Consider confidentiality requirements',
-          'Think about legal obligations'
-        ]
-      },
-      {
-        question: 'What documentation should be maintained for legal purposes?',
-        options: [
-          'Only final resolution steps',
-          'No documentation needed',
-          'Comprehensive incident timeline and legal impact assessment',
-          'Only system logs'
-        ],
-        correctAnswer: 2,
-        explanation: 'Comprehensive documentation helps track the incident and may be required for legal proceedings.',
-        hints: [
-          'Consider legal requirements',
-          'Think about potential litigation'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'ransom',
-    title: 'Ransom Pay',
-    description: 'Handle ransom demands and legal considerations',
-    icon: <Banknote className="h-12 w-12 text-yellow-500" />,
-    impact: 'Legal Implications and Data Protection',
-    scenario: 'The attackers have demanded a significant ransom payment in cryptocurrency to provide decryption keys for sensitive legal documents and client files. You must evaluate the ransom demand while considering legal obligations, client confidentiality, and regulatory requirements.',
-    questions: [
-      {
-        question: 'What is your first step in evaluating the ransom demand?',
-        options: [
-          'Calculate payment amount',
-          'Assess legal obligations and regulatory requirements',
-          'Prepare cryptocurrency wallet',
-          'Contact attackers immediately'
-        ],
-        correctAnswer: 1,
-        explanation: 'Assessing legal obligations helps determine appropriate response while maintaining compliance.',
-        hints: [
-          'Consider regulatory requirements',
-          'Think about legal obligations'
-        ]
-      },
-      {
-        question: 'How should you document ransom-related decisions?',
-        options: [
-          'Screenshot ransom note only',
-          'Ignore documentation',
-          'Maintain comprehensive legal decision records',
-          'Only record payment details'
-        ],
-        correctAnswer: 2,
-        explanation: 'Complete documentation protects the organization and may be required for legal proceedings.',
-        hints: [
-          'Consider legal requirements',
-          'Think about potential litigation'
-        ]
-      },
-      {
-        question: 'What factors should NOT primarily influence payment decision?',
-        options: [
-          'Legal obligations',
-          'Regulatory requirements',
-          'Ransom amount alone',
-          'Client impact'
-        ],
-        correctAnswer: 2,
-        explanation: 'The ransom amount alone should not drive the decision; consider all legal and regulatory factors.',
-        hints: [
-          'Consider multiple factors',
-          'Think about legal implications'
-        ]
-      },
-      {
-        question: 'What legal preparations are needed before any payment decision?',
-        options: [
-          'Just cryptocurrency setup',
-          'Complete legal and regulatory assessment',
-          'Draft public statement',
-          'Budget allocation only'
-        ],
-        correctAnswer: 1,
-        explanation: 'A thorough legal assessment helps make an informed payment decision.',
-        hints: [
-          'Consider regulatory requirements',
-          'Think about legal obligations'
-        ]
-      },
-      {
-        question: 'How should negotiations be handled?',
-        options: [
-          'Accept first demand',
-          'Ignore all demands',
-          'Follow established legal procedures',
-          'Make counter-offers'
-        ],
-        correctAnswer: 2,
-        explanation: 'Following legal procedures ensures compliance with regulations and protects client interests.',
-        hints: [
-          'Consider legal protocols',
-          'Think about regulatory requirements'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'financial',
-    title: 'Financial Loss',
-    description: 'Assessment and management of legal costs and liabilities',
-    icon: <AlertTriangle className="h-12 w-12 text-orange-500" />,
-    impact: 'Legal Costs and Liability Management',
-    scenario: 'The ransomware incident has caused significant financial impact through legal operations downtime, potential client claims, and regulatory penalties. You need to assess and manage these financial implications while maintaining legal obligations.',
-    questions: [
-      {
-        question: 'How should you assess the financial impact?',
-        options: [
-          'Only direct costs',
-          'Wait until resolution',
-          'Comprehensive legal and financial analysis',
-          'Basic damage estimate'
-        ],
-        correctAnswer: 2,
-        explanation: 'A comprehensive analysis helps understand full financial and legal implications.',
-        hints: [
-          'Consider all cost types',
-          'Think about potential liabilities'
-        ]
-      },
-      {
-        question: 'What should be included in cost assessment?',
-        options: [
-          'Only system repairs',
-          'Just overtime costs',
-          'All direct costs, potential claims, and regulatory penalties',
-          'Hardware costs only'
-        ],
-        correctAnswer: 2,
-        explanation: 'Including all potential costs ensures accurate impact assessment.',
-        hints: [
-          'Consider potential claims',
-          'Think about regulatory penalties'
-        ]
-      },
-      {
-        question: 'How should recovery spending be prioritized?',
-        options: [
-          'Lowest cost options',
-          'Most expensive solutions',
-          'Based on legal obligations and client impact',
-          'Equal distribution'
-        ],
-        correctAnswer: 2,
-        explanation: 'Prioritizing based on legal obligations ensures compliance and client protection.',
-        hints: [
-          'Consider legal requirements',
-          'Think about client impact'
-        ]
-      },
-      {
-        question: 'What financial documentation is crucial for legal purposes?',
-        options: [
-          'Only invoices',
-          'Just payment records',
-          'Comprehensive financial impact and legal cost documentation',
-          'Basic expense tracking'
-        ],
-        correctAnswer: 2,
-        explanation: 'Complete documentation helps track costs and may be required for legal proceedings.',
-        hints: [
-          'Consider legal requirements',
-          'Think about potential claims'
-        ]
-      },
-      {
-        question: 'How should potential client claims be handled?',
-        options: [
-          'Ignore until formal claim',
-          'Proactively assess and document',
-          'Wait for client complaints',
-          'Assume no claims will occur'
-        ],
-        correctAnswer: 1,
-        explanation: 'Proactive assessment helps prepare for potential claims and protect the organization.',
-        hints: [
-          'Consider client impact',
-          'Think about legal protection'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'technical',
-    title: 'Technical Recovery',
-    description: 'System restoration and data recovery procedures',
-    icon: <AlertTriangle className="h-12 w-12 text-orange-500" />,
-    impact: 'System Restoration and Data Integrity',
-    scenario: 'As IT Security Lead, you must coordinate the technical recovery of affected systems while ensuring data integrity and preventing re-infection. The recovery process must be carefully planned and executed to minimize business disruption.',
-    questions: [
-      {
-        question: 'How should you approach system recovery?',
-        options: [
-          'Restore from the most recent backup',
-          'Wait until the incident is over',
-          'Follow a structured recovery plan with validation steps',
-          'Focus only on critical systems'
-        ],
-        correctAnswer: 2,
-        explanation: 'A structured recovery plan ensures systematic and validated restoration.',
-        hints: [
-          'Think about recovery procedures',
-          'Consider validation requirements'
-        ]
-      },
-      {
-        question: 'What should be included in the technical recovery plan?',
-        options: [
-          'Only system restoration steps',
-          'Just data recovery procedures',
-          'Comprehensive recovery procedures with validation and testing',
-          'Only security updates'
-        ],
-        correctAnswer: 2,
-        explanation: 'A complete recovery plan ensures all aspects of system restoration are covered.',
-        hints: [
-          'Consider all recovery aspects',
-          'Think about validation steps'
-        ]
-      },
-      {
-        question: 'How should you handle system monitoring during recovery?',
-        options: [
-          'Disable monitoring',
-          'Continue normal monitoring',
-          'Implement enhanced monitoring with alerts',
-          'Reduce monitoring to save resources'
-        ],
-        correctAnswer: 2,
-        explanation: 'Enhanced monitoring helps detect any issues during recovery.',
-        hints: [
-          'Consider system stability',
-          'Think about early warning systems'
-        ]
-      },
-      {
-        question: 'What security measures should be implemented during recovery?',
-        options: [
-          'Only basic security',
-          'Just network segmentation',
-          'Comprehensive security controls and monitoring',
-          'None until recovery is complete'
-        ],
-        correctAnswer: 2,
-        explanation: 'Multiple security measures help prevent re-infection during recovery.',
-        hints: [
-          'Think about layered security',
-          'Consider protection mechanisms'
-        ]
-      },
-      {
-        question: 'How should you communicate technical status to stakeholders?',
-        options: [
-          'Provide only positive information',
-          'Share complete technical status with recovery progress',
-          'Delay communication until full recovery',
-          'Delegate to the IT team'
-        ],
-        correctAnswer: 1,
-        explanation: 'Sharing complete technical status helps stakeholders understand the recovery progress.',
-        hints: [
-          'Consider stakeholder needs',
-          'Think about transparency'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'reputation',
-    title: 'Reputation Damage',
-    description: 'Manage legal reputation and client trust',
-    icon: <Users className="h-12 w-12 text-blue-500" />,
-    impact: 'Client Trust and Legal Standing',
-    scenario: "The ransomware attack has compromised sensitive client information and disrupted legal services. News of the incident is spreading, potentially damaging the legal division's reputation and client trust. You must manage the situation while protecting client interests and maintaining professional obligations.",
-    questions: [
-      {
-        question: 'What should be your first communication priority?',
-        options: [
-          'Public statement to media',
-          'Direct communication with affected clients',
-          'Internal staff announcement',
-          'Social media update'
-        ],
-        correctAnswer: 1,
-        explanation: 'Direct client communication maintains trust and fulfills legal obligations.',
-        hints: [
-          'Consider client obligations',
-          'Think about confidentiality'
-        ]
-      },
-      {
-        question: 'How should client concerns be addressed?',
-        options: [
-          'Generic responses',
-          'Individual case-by-case assessment',
-          'Standard template',
-          'Defer to management'
-        ],
-        correctAnswer: 1,
-        explanation: "Individual assessment ensures proper handling of each client's situation.",
-        hints: [
-          'Consider client impact',
-          'Think about legal obligations'
-        ]
-      },
-      {
-        question: 'What information should be included in client communications?',
-        options: [
-          'Full technical details',
-          'Only necessary legal information',
-          'Complete incident report',
-          'No information'
-        ],
-        correctAnswer: 1,
-        explanation: 'Providing necessary legal information maintains transparency while protecting interests.',
-        hints: [
-          'Consider legal requirements',
-          'Think about client needs'
-        ]
-      },
-      {
-        question: 'How should media inquiries be handled?',
-        options: [
-          'Full disclosure',
-          'No comment',
-          'Through legal communications team',
-          'Direct responses'
-        ],
-        correctAnswer: 2,
-        explanation: 'Legal communications team ensures consistent and appropriate messaging.',
-        hints: [
-          'Consider legal implications',
-          'Think about client confidentiality'
-        ]
-      },
-      {
-        question: 'What reputation recovery steps are most important?',
-        options: [
-          'Marketing campaign',
-          'Demonstrating legal compliance and client protection',
-          'Price reductions',
-          'Staff changes'
-        ],
-        correctAnswer: 1,
-        explanation: 'Demonstrating compliance and protection rebuilds trust effectively.',
-        hints: [
-          'Consider legal obligations',
-          'Think about client trust'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'regulatory',
-    title: 'Regulatory Compliance',
-    description: 'Ensure compliance with legal and regulatory requirements',
-    icon: <Shield className="h-12 w-12 text-green-500" />,
-    impact: 'Legal Compliance and Reporting',
-    scenario: 'The ransomware attack has potentially compromised client confidentiality and affected legal operations. You must ensure compliance with legal regulations, reporting requirements, and professional obligations while managing the incident.',
-    questions: [
-      {
-        question: 'What is your first regulatory compliance step?',
-        options: [
-          'Wait for regulator inquiry',
-          'Assess regulatory reporting requirements',
-          'Contact all regulators',
-          'Internal review only'
-        ],
-        correctAnswer: 1,
-        explanation: 'Assessing requirements ensures timely and appropriate regulatory compliance.',
-        hints: [
-          'Consider reporting deadlines',
-          'Think about regulatory obligations'
-        ]
-      },
-      {
-        question: 'How should regulatory documentation be prepared?',
-        options: [
-          'Basic summary',
-          'Comprehensive legal and technical documentation',
-          'Informal notes',
-          'Verbal report'
-        ],
-        correctAnswer: 1,
-        explanation: 'Comprehensive documentation ensures proper regulatory compliance.',
-        hints: [
-          'Consider legal requirements',
-          'Think about documentation standards'
-        ]
-      },
-      {
-        question: 'What regulatory notifications are required?',
-        options: [
-          'All possible regulators',
-          'Only mandatory notifications',
-          'No notifications',
-          'Selected regulators'
-        ],
-        correctAnswer: 1,
-        explanation: 'Focusing on mandatory notifications ensures proper compliance.',
-        hints: [
-          'Consider legal requirements',
-          'Think about notification obligations'
-        ]
-      },
-      {
-        question: 'How should regulatory interactions be managed?',
-        options: [
-          'Direct communication',
-          'Through legal counsel',
-          'Informal discussions',
-          'Written responses only'
-        ],
-        correctAnswer: 1,
-        explanation: 'Legal counsel ensures proper handling of regulatory matters.',
-        hints: [
-          'Consider legal implications',
-          'Think about professional standards'
-        ]
-      },
-      {
-        question: 'What compliance monitoring should be implemented?',
-        options: [
-          'Basic checks',
-          'Enhanced legal and regulatory monitoring',
-          'No changes needed',
-          'External audit only'
-        ],
-        correctAnswer: 1,
-        explanation: 'Enhanced monitoring helps maintain ongoing compliance.',
-        hints: [
-          'Consider regulatory requirements',
-          'Think about continuous compliance'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'data',
-    title: 'Data Protection',
-    description: 'Safeguard legal documents and client information',
-    icon: <Lock className="h-12 w-12 text-purple-500" />,
-    impact: 'Client Confidentiality and Data Security',
-    scenario: 'The ransomware attack has potentially compromised sensitive legal documents and client information. You must ensure the protection of privileged communications and confidential data while maintaining legal obligations and client trust.',
-    questions: [
-      {
-        question: 'What is your first data protection priority?',
-        options: [
-          'System restoration',
-          'Assess data exposure and legal implications',
-          'Contact all clients',
-          'Public announcement'
-        ],
-        correctAnswer: 1,
-        explanation: 'Assessing exposure helps determine necessary protective measures.',
-        hints: [
-          'Consider client confidentiality',
-          'Think about legal obligations'
-        ]
-      },
-      {
-        question: 'How should compromised data be handled?',
-        options: [
-          'Ignore if encrypted',
-          'Comprehensive legal assessment and notification',
-          'Basic cleanup',
-          'System reset'
-        ],
-        correctAnswer: 1,
-        explanation: 'Comprehensive assessment ensures proper handling of compromised data.',
-        hints: [
-          'Consider legal requirements',
-          'Think about client impact'
-        ]
-      },
-      {
-        question: 'What data protection measures should be implemented?',
-        options: [
-          'Basic security',
-          'Enhanced legal data protection controls',
-          'No changes needed',
-          'External monitoring only'
-        ],
-        correctAnswer: 1,
-        explanation: 'Enhanced controls help protect sensitive legal information.',
-        hints: [
-          'Consider confidentiality requirements',
-          'Think about data protection'
-        ]
-      },
-      {
-        question: 'How should data access be managed?',
-        options: [
-          'Open access',
-          'Strict legal need-to-know basis',
-          'Department-level access',
-          'No restrictions'
-        ],
-        correctAnswer: 1,
-        explanation: 'Need-to-know basis maintains proper confidentiality.',
-        hints: [
-          'Consider attorney-client privilege',
-          'Think about access controls'
-        ]
-      },
-      {
-        question: 'What documentation is needed for data protection?',
-        options: [
-          'Basic logs',
-          'Comprehensive legal data protection records',
-          'No documentation',
-          'System reports only'
-        ],
-        correctAnswer: 1,
-        explanation: 'Comprehensive records support legal compliance and protection.',
-        hints: [
-          'Consider legal requirements',
-          'Think about documentation needs'
-        ]
-      }
-    ]
-  },
-  {
-    id: 'recovery',
-    title: 'Recovery Planning',
-    description: 'Develop legal recovery and continuity strategies',
-    icon: <CheckCircle className="h-12 w-12 text-teal-500" />,
-    impact: 'Legal Service Continuity',
-    scenario: 'Following the ransomware attack, you must develop and implement recovery plans that ensure the continuity of legal services while maintaining client confidentiality and meeting legal obligations. The focus is on restoring critical legal operations and protecting client interests.',
-    questions: [
-      {
-        question: 'What should be the first recovery priority?',
-        options: [
-          'All systems',
-          'Critical legal operations and client services',
-          'Non-essential services',
-          'External systems'
-        ],
-        correctAnswer: 1,
-        explanation: 'Focusing on critical operations ensures essential legal services continue.',
-        hints: [
-          'Consider legal obligations',
-          'Think about client impact'
-        ]
-      },
-      {
-        question: 'How should recovery resources be allocated?',
-        options: [
-          'Equal distribution',
-          'Based on legal priorities and client impact',
-          'First-come-first-served',
-          'External priority'
-        ],
-        correctAnswer: 1,
-        explanation: 'Priority-based allocation ensures critical legal needs are met.',
-        hints: [
-          'Consider legal requirements',
-          'Think about client impact'
-        ]
-      },
-      {
-        question: 'What recovery documentation is essential?',
-        options: [
-          'Basic notes',
-          'Comprehensive legal recovery plans',
-          'No documentation',
-          'System logs only'
-        ],
-        correctAnswer: 1,
-        explanation: 'Comprehensive plans ensure proper legal service recovery.',
-        hints: [
-          'Consider legal requirements',
-          'Think about recovery needs'
-        ]
-      },
-      {
-        question: 'How should recovery progress be communicated?',
-        options: [
-          'Public updates',
-          'Targeted legal client communications',
-          'No updates',
-          'Social media'
-        ],
-        correctAnswer: 1,
-        explanation: 'Targeted communications maintain client trust and legal obligations.',
-        hints: [
-          'Consider client needs',
-          'Think about confidentiality'
-        ]
-      },
-      {
-        question: 'What recovery validation is required?',
-        options: [
-          'Basic check',
-          'Comprehensive legal and operational validation',
-          'No validation',
-          'External audit only'
-        ],
-        correctAnswer: 1,
-        explanation: 'Comprehensive validation ensures proper legal service restoration.',
-        hints: [
-          'Consider legal requirements',
-          'Think about service quality'
-        ]
-      }
-    ]
-  }
-];
-
 function App() {
+  const [selectedRoles, setSelectedRoles] = useState<string[]>([]);
+  const [filteredRiskCards, setFilteredRiskCards] = useState<RiskCard[]>([]);
   const [selectedCard, setSelectedCard] = useState<string | null>(null);
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
-  const [selectedAnswer, setSelectedAnswer] = useState<number | null>(null);
+  const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
+  const [showHints, setShowHints] = useState(false);
+  const [theme, setTheme] = useState<'light' | 'dark'>('light');
   const [correctAnswers, setCorrectAnswers] = useState<number>(0);
   const [showResults, setShowResults] = useState(false);
   const [answeredQuestions, setAnsweredQuestions] = useState<boolean[]>([]);
   const [hintCounts, setHintCounts] = useState<number[]>([]);
   const [showHint, setShowHint] = useState<boolean>(false);
   const [active, setActive] = useState<string | null>(null);
-  const [isDark, setIsDark] = useState(true);
+  const [currentRiskCardQuestions, setCurrentRiskCardQuestions] = useState<Question[]>([]);
+  const [roleSelectionComplete, setRoleSelectionComplete] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [showAdminLogin, setShowAdminLogin] = useState(false);
+  const [adminCredentials, setAdminCredentials] = useState({ email: '', password: '' });
+  const [isLoading, setIsLoading] = useState(false);
+  const [assessments, setAssessments] = useState<AssessmentData[]>([]);
+  const [showAnalytics, setShowAnalytics] = useState(false);
+  const [isUserAuthenticated, setIsUserAuthenticated] = useState(false);
+  const [userCredentials, setUserCredentials] = useState({ email: '', password: '' });
+  const [userLoginError, setUserLoginError] = useState('');
+  const [isUserLoading, setIsUserLoading] = useState(false);
+  const [completedRiskCards, setCompletedRiskCards] = useState<string[]>([]);
+  const [showFinalAnalytics, setShowFinalAnalytics] = useState(false);
+
+  const roles = [
+    'CFO',
+    'IT System',
+    'Legal Division',
+    'Marketing',
+    'Security',
+    'Vendor Manager',
+    'Governance and Compliance',
+    'Security Incident Manager'
+  ];
+
+  const handleRoleSelect = (role: string) => {
+    setSelectedRoles(prev => {
+      if (prev.includes(role)) {
+        return prev.filter(r => r !== role);
+      } else {
+        return [...prev, role];
+      }
+    });
+  };
+
+  const handleStartGenericAssessment = () => {
+    setSelectedRoles([]); // Empty array means generic assessment
+    setRoleSelectionComplete(true);
+  };
+
+  const handleStartRoleBasedAssessment = () => {
+    setRoleSelectionComplete(true);
+  };
 
   useEffect(() => {
-    // Check system preference or saved preference
-    const savedTheme = localStorage.getItem('theme');
-    if (savedTheme) {
-      setIsDark(savedTheme === 'dark');
-    } else {
-      setIsDark(window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const urlParams = new URLSearchParams(window.location.search);
+    const rolesParam = urlParams.get('roles');
+    console.log('URL Parameters:', window.location.search);
+    console.log('Roles Parameter:', rolesParam);
+    if (rolesParam) {
+      const roles = decodeURIComponent(rolesParam).split(',');
+      console.log('Decoded Roles:', roles);
+      setSelectedRoles(roles);
     }
   }, []);
 
   useEffect(() => {
-    // Update theme class and save preference
-    document.documentElement.classList.toggle('dark', isDark);
-    localStorage.setItem('theme', isDark ? 'dark' : 'light');
-  }, [isDark]);
+    console.log('Selected Roles:', selectedRoles);
+    setFilteredRiskCards(riskCards);
+  }, [selectedRoles]);
 
-  const toggleTheme = () => {
-    setIsDark(!isDark);
+  useEffect(() => {
+    if (isAdmin) {
+      setAssessments(assessmentStore.getAssessments());
+    }
+  }, [isAdmin]);
+
+  const getFilteredQuestions = (card: RiskCard): Question[] => {
+    console.log(`Ignoring card theme (${card.title}). Selecting questions based ONLY on roles: ${selectedRoles.join(', ')}`);
+    
+    if (selectedRoles.length === 0) {
+        console.log("No roles selected, returning first 5 questions of the current card.");
+        return card.questions.slice(0, 5);
+    }
+
+    const allMatchingRoleQuestions: Question[] = [];
+    riskCards.forEach(rc => {
+        rc.questions.forEach(q => {
+            if (selectedRoles.includes(q.role)) {
+                if (!allMatchingRoleQuestions.some(existingQ => existingQ.question === q.question)) {
+                    allMatchingRoleQuestions.push(q);
+                }
+            }
+        });
+    });
+
+    console.log(`Found ${allMatchingRoleQuestions.length} total questions across all cards for selected roles.`);
+
+    if (allMatchingRoleQuestions.length === 0) {
+        console.log("No questions found for selected roles across all cards. Falling back to first 5 of current card.");
+        return card.questions.slice(0, 5);
+    }
+    if (allMatchingRoleQuestions.length <= 5) {
+        console.log("5 or fewer total matching questions found. Using all and shuffling.");
+        return shuffleArray([...allMatchingRoleQuestions]);
+    }
+
+    console.log("More than 5 total matching questions found. Randomly selecting 5.");
+    const shuffledAll = shuffleArray([...allMatchingRoleQuestions]);
+    const finalSelection = shuffledAll.slice(0, 5);
+    
+    console.log("Final selected questions (randomly from all role matches):", finalSelection.map((q: Question) => q.question));
+    return finalSelection;
   };
 
   const handleCardClick = (cardId: string) => {
+    console.log('Card clicked:', cardId);
     setSelectedCard(cardId);
+    const card = riskCards.find(c => c.id === cardId);
+    if (card) {
+      console.log('Found card:', card);
+      const questions = getFilteredQuestions(card);
+      setCurrentRiskCardQuestions(questions);
+      setHintCounts(new Array(questions.length).fill(0));
+      console.log('Questions set for this card:', questions.map(q => q.question));
+    }
     setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
+    setSelectedAnswers([]);
+    setShowHints(false);
     setCorrectAnswers(0);
     setShowResults(false);
     setAnsweredQuestions([]);
-    setHintCounts(new Array(riskCards.find(c => c.id === cardId)?.questions.length || 0).fill(0));
     setShowHint(false);
   };
 
+  const getCurrentQuestion = (): Question | undefined => {
+    return currentRiskCardQuestions[currentQuestionIndex];
+  };
+
   const handleHintClick = () => {
-    const currentCard = riskCards.find(c => c.id === selectedCard);
-    if (!currentCard || !currentCard.questions[currentQuestionIndex].hints) return;
+    const currentQuestion = getCurrentQuestion();
+    if (!currentQuestion || !currentQuestion.hints || hintCounts[currentQuestionIndex] >= currentQuestion.hints.length) return;
 
     const newHintCounts = [...hintCounts];
+    if (newHintCounts[currentQuestionIndex] === undefined) newHintCounts[currentQuestionIndex] = 0;
+    
     if (newHintCounts[currentQuestionIndex] < 2) {
-      newHintCounts[currentQuestionIndex]++;
-      setHintCounts(newHintCounts);
-      setShowHint(true);
+        newHintCounts[currentQuestionIndex]++;
+        setHintCounts(newHintCounts);
+        setShowHint(true);
     }
   };
 
-  const getQuestionScore = (questionIndex: number) => {
-    const hintCount = hintCounts[questionIndex];
+  const getQuestionScore = (questionIndex: number): number => {
+    const hintCount = hintCounts[questionIndex] || 0;
     if (hintCount === 0) return 5;
     if (hintCount === 1) return 3;
     return 2;
   };
 
-  const calculateTotalScore = () => {
-    return answeredQuestions.reduce((total, isCorrect, index) => {
-      return total + (isCorrect ? getQuestionScore(index) : 0);
+  const calculateTotalScore = (): number => {
+    const currentAnswers = answeredQuestions.slice(0, currentRiskCardQuestions.length);
+    return currentAnswers.reduce((total, isCorrect, index) => {
+      return total + (isCorrect === true ? getQuestionScore(index) : 0);
     }, 0);
   };
 
   const handleAnswerSelect = (answerIndex: number) => {
-    setSelectedAnswer(answerIndex);
+    console.log('Answer selected:', answerIndex);
+    setSelectedAnswers([answerIndex]);
     
-    const currentCard = riskCards.find(c => c.id === selectedCard);
-    if (currentCard) {
-      const isCorrect = answerIndex === currentCard.questions[currentQuestionIndex].correctAnswer;
-      const newAnsweredQuestions = [...answeredQuestions];
-      newAnsweredQuestions[currentQuestionIndex] = isCorrect;
-      setAnsweredQuestions(newAnsweredQuestions);
-
-      if (isCorrect) {
-        setCorrectAnswers(prev => prev + 1);
-      }
+    const currentQuestion = getCurrentQuestion();
+    if (currentQuestion) {
+      const isCorrect = answerIndex === currentQuestion.correctAnswer;
+      console.log('Is answer correct:', isCorrect);
+      setAnsweredQuestions(prevAnswers => {
+        const newAnswers = [...prevAnswers];
+        while (newAnswers.length <= currentQuestionIndex) {
+            newAnswers.push(false);
+        }
+        newAnswers[currentQuestionIndex] = isCorrect;
+        return newAnswers;
+      });
     }
   };
 
   const handleNextQuestion = () => {
-    const currentCard = riskCards.find(c => c.id === selectedCard);
-    if (currentCard && currentQuestionIndex < currentCard.questions.length - 1) {
+    console.log('Moving to next question');
+    if (currentQuestionIndex < currentRiskCardQuestions.length - 1) {
       setCurrentQuestionIndex(prev => prev + 1);
-      setSelectedAnswer(null);
+      setSelectedAnswers([]);
+      setShowHint(false);
     } else {
+      console.log('Showing results');
       setShowResults(true);
+      
+      // Store assessment data when completed
+      const assessmentData: AssessmentData = {
+        id: Date.now().toString(),
+        timestamp: new Date().toISOString(),
+        selectedRoles,
+        scores: [{
+          cardId: selectedCard!,
+          cardTitle: riskCards.find(c => c.id === selectedCard)?.title || '',
+          score: calculateTotalScore(),
+          maxScore: 25,
+          answeredQuestions,
+          selectedAnswers
+        }],
+        hintCounts: hintCounts
+      };
+      assessmentStore.addAssessment(assessmentData);
+
+      if (selectedCard && !completedRiskCards.includes(selectedCard)) {
+        setCompletedRiskCards(prev => [...prev, selectedCard]);
+      }
     }
   };
 
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
       setCurrentQuestionIndex(prev => prev - 1);
-      setSelectedAnswer(null);
+      setSelectedAnswers([]);
+      setShowHint(false);
     }
   };
 
@@ -814,33 +264,608 @@ function App() {
 
   const handleRestartQuiz = () => {
     setCurrentQuestionIndex(0);
-    setSelectedAnswer(null);
+    setSelectedAnswers([]);
     setCorrectAnswers(0);
     setShowResults(false);
     setAnsweredQuestions([]);
+  };
+
+  const handleBackToRoleSelection = () => {
+    setRoleSelectionComplete(false);
+    setSelectedCard(null);
+    setCurrentQuestionIndex(0);
+    setSelectedAnswers([]);
+    setShowHints(false);
+    setCorrectAnswers(0);
+    setShowResults(false);
+    setAnsweredQuestions([]);
+    setHintCounts([]);
+    setShowHint(false);
   };
 
   const navItems = [
     { name: "Home", link: "/", icon: <Shield className="h-4 w-4" /> },
     { name: "Assessments", link: "/assessments", icon: <BookOpen className="h-4 w-4" /> },
     { name: "Resources", link: "/resources", icon: <Lock className="h-4 w-4" /> },
+    { name: "Admin", link: "#", icon: <UserCog className="h-4 w-4" />, onClick: () => setShowAdminLogin(true) },
   ];
 
+  const handleAdminLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsLoading(true);
+    console.log('Attempting admin login with:', adminCredentials);
+    
+    // Simulate a small delay to show loading state
+    setTimeout(() => {
+      if (adminCredentials.email === 'admin@gmail.com' && adminCredentials.password === '123') {
+        console.log('Admin login successful');
+        setIsAdmin(true);
+        setShowAdminLogin(false);
+        setAssessments(assessmentStore.getAssessments());
+      } else {
+        console.log('Admin login failed');
+        alert('Invalid credentials');
+      }
+      setIsLoading(false);
+    }, 500);
+  };
+
+  const handleAdminLogout = () => {
+    console.log('Admin logging out');
+    setIsAdmin(false);
+    setShowAdminLogin(false);
+    setAdminCredentials({ email: '', password: '' });
+    setAssessments([]);
+  };
+
+  if (showAdminLogin) {
+    return (
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white'}`}>
+        <GridBackgroundDemo />
+        <div className="relative z-10 min-h-screen bg-white/50 dark:bg-black/50">
+          <FloatingNav navItems={navItems} isDark={theme === 'dark'} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+          
+          <div className="pt-24 relative z-20">
+            <div className="max-w-md mx-auto px-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg"
+              >
+                <div className="text-center mb-8">
+                  <UserCog className="h-12 w-12 text-blue-500 mx-auto mb-4" />
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white">Admin Login</h2>
+                </div>
+                
+                <form onSubmit={handleAdminLogin} className="space-y-6">
+                  <div>
+                    <label htmlFor="email" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Email
+                    </label>
+                    <input
+                      type="email"
+                      id="email"
+                      value={adminCredentials.email}
+                      onChange={(e) => setAdminCredentials(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      required
+                      disabled={isLoading}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label htmlFor="password" className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">
+                      Password
+                    </label>
+                    <input
+                      type="password"
+                      id="password"
+                      value={adminCredentials.password}
+                      onChange={(e) => setAdminCredentials(prev => ({ ...prev, password: e.target.value }))}
+                      className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                      required
+                      disabled={isLoading}
+                    />
+                  </div>
+                  
+                  <div className="flex justify-between items-center">
+                    <button
+                      type="button"
+                      onClick={() => setShowAdminLogin(false)}
+                      className="text-blue-600 dark:text-blue-400 hover:underline"
+                      disabled={isLoading}
+                    >
+                      Back to Home
+                    </button>
+                    <button
+                      type="submit"
+                      className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg transition-all ${
+                        isLoading ? 'opacity-50 cursor-not-allowed' : ''
+                      }`}
+                      disabled={isLoading}
+                    >
+                      {isLoading ? 'Logging in...' : 'Login'}
+                    </button>
+                  </div>
+                </form>
+              </motion.div>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (isAdmin) {
+    return (
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white'}`}>
+        <GridBackgroundDemo />
+        <div className="relative z-10 min-h-screen bg-white/50 dark:bg-black/50">
+          <FloatingNav navItems={navItems} isDark={theme === 'dark'} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+          
+          <div className="pt-24 relative z-20">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex justify-between items-center mb-8">
+                <h1 className="text-3xl font-bold text-slate-900 dark:text-white">Admin Dashboard</h1>
+                <button
+                  onClick={handleAdminLogout}
+                  className="text-blue-600 dark:text-blue-400 hover:underline"
+                >
+                  Logout
+                </button>
+              </div>
+
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Recent Assessments</h2>
+                <div className="grid gap-6">
+                  {assessments.map((assessment) => (
+                    <motion.div
+                      key={assessment.id}
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-xl shadow-lg"
+                    >
+                      <div className="flex justify-between items-start mb-4">
+                        <div>
+                          <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                            Assessment {assessment.id}
+                          </h3>
+                          <p className="text-sm text-slate-600 dark:text-slate-400">
+                            {new Date(assessment.timestamp).toLocaleString()}
+                          </p>
+                        </div>
+                        <div className="flex flex-wrap gap-2">
+                          {assessment.selectedRoles.map((role) => (
+                            <span
+                              key={role}
+                              className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs"
+                            >
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
+                      
+                      <div className="space-y-4">
+                        {assessment.scores.map((score) => (
+                          <div key={score.cardId} className="bg-white dark:bg-slate-700 p-4 rounded-lg">
+                            <div className="flex justify-between items-start mb-2">
+                              <div>
+                                <h4 className="font-semibold text-slate-900 dark:text-white">
+                                  {score.cardTitle}
+                                </h4>
+                                <div className="mt-2">
+                                  <p className="text-slate-700 dark:text-gray-300">
+                                    Score: {score.score}/{score.maxScore}
+                                  </p>
+                                  <p className="text-sm text-slate-600 dark:text-slate-400">
+                                    Correct Answers: {score.answeredQuestions.filter(Boolean).length}/{score.answeredQuestions.length}
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="text-right">
+                                <p className="text-sm text-slate-600 dark:text-slate-400">
+                                  Success Rate: {Math.round((score.score / score.maxScore) * 100)}%
+                                </p>
+                                <button
+                                  onClick={() => {
+                                    const detailsElement = document.getElementById(`details-${score.cardId}`);
+                                    if (detailsElement) {
+                                      detailsElement.classList.toggle('hidden');
+                                    }
+                                  }}
+                                  className="mt-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 text-sm flex items-center gap-1"
+                                >
+                                  View Details
+                                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor">
+                                    <path fillRule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clipRule="evenodd" />
+                                  </svg>
+                                </button>
+                              </div>
+                            </div>
+                            
+                            <div id={`details-${score.cardId}`} className="hidden mt-4 pt-4 border-t border-slate-200 dark:border-slate-600">
+                              <div className="space-y-4">
+                                {score.answeredQuestions.map((isCorrect, index) => {
+                                  const question = riskCards
+                                    .find(card => card.id === score.cardId)
+                                    ?.questions[index];
+                                  
+                                  if (!question) return null;
+                                  
+                                  return (
+                                    <div key={index} className="bg-slate-50 dark:bg-slate-800 p-4 rounded-lg">
+                                      <div className="flex justify-between items-start mb-2">
+                                        <h5 className="font-medium text-slate-900 dark:text-white">
+                                          Question {index + 1}
+                                        </h5>
+                                        <span className={`px-2 py-1 rounded-full text-xs ${
+                                          isCorrect 
+                                            ? 'bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200'
+                                            : 'bg-red-100 dark:bg-red-900 text-red-800 dark:text-red-200'
+                                        }`}>
+                                          {isCorrect ? 'Correct' : 'Incorrect'}
+                                        </span>
+                                      </div>
+                                      <p className="text-slate-700 dark:text-gray-300 mb-2">
+                                        {question.question}
+                                      </p>
+                                      <div className="space-y-2">
+                                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                                          Selected Answer: {question.options[score.selectedAnswers[index]]}
+                                        </p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                                          Correct Answer: {question.options[question.correctAnswer]}
+                                        </p>
+                                        <p className="text-sm text-slate-600 dark:text-slate-400">
+                                          Hints Used: {assessment.hintCounts?.[index] || 0}
+                                        </p>
+                                        {!isCorrect && (
+                                          <p className="text-sm text-red-600 dark:text-red-400">
+                                            Explanation: {question.explanation}
+                                          </p>
+                                        )}
+                                      </div>
+                                    </div>
+                                  );
+                                })}
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              </div>
+
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Risk Cards</h2>
+              <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+                {riskCards.map((card) => (
+                  <motion.div
+                    key={card.id}
+                    className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-8 rounded-xl shadow-lg"
+                    whileHover={{ y: -5 }}
+                  >
+                    <div>
+                      <RiskCardIcon iconName={card.icon} className="h-12 w-12 text-red-500" />
+                      <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{card.title}</h3>
+                      <p className="text-slate-700 dark:text-gray-300 mb-4">{card.description}</p>
+                      <div className="space-y-4">
+                        <div>
+                          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Questions:</h4>
+                          <ul className="list-disc list-inside text-slate-700 dark:text-gray-300">
+                            {card.questions.map((q, index) => (
+                              <li key={index} className="text-sm">{q.question}</li>
+                            ))}
+                          </ul>
+                        </div>
+                        <div>
+                          <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Relevant Roles:</h4>
+                          <div className="flex flex-wrap gap-2">
+                            {Array.from(new Set(card.questions.map(q => q.role))).map((role) => (
+                              <span
+                                key={role}
+                                className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-xs"
+                              >
+                                {role}
+                              </span>
+                            ))}
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+
+              <button
+                disabled={completedRiskCards.length < 7}
+                onClick={() => setShowFinalAnalytics(true)}
+                className={`mt-8 px-6 py-3 rounded-lg font-bold transition ${
+                  completedRiskCards.length < 7
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                }`}
+              >
+                Final Analytics
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (!roleSelectionComplete) {
+    return (
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white'}`}>
+        <GridBackgroundDemo />
+        <div className="relative z-10 min-h-screen bg-white/50 dark:bg-black/50">
+          <FloatingNav navItems={navItems} isDark={theme === 'dark'} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
+
+          <div className="pt-24 relative z-20">
+            <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5 }}
+                className="text-center mb-12"
+              >
+                <Shield className="h-20 w-20 text-blue-500 dark:text-blue-600 mx-auto mb-6" />
+                <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-4">Select your Roles</h1>
+                <p className="text-xl text-slate-700 dark:text-gray-300">Choose one or more roles to begin your specialized assessment</p>
+              </motion.div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
+                <CardContainer>
+                  <CardBody>
+                    <CardItem>
+                      <motion.div
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.2 }}
+                        className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        <div className="flex items-center gap-4 mb-4">
+                          <Shield className="h-8 w-8 text-blue-500" />
+                          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">General Assessment</h2>
+                        </div>
+                        <div className="space-y-4">
+                          <p className="text-slate-700 dark:text-gray-300">
+                            A comprehensive tabletop exercise designed to test your organization's incident response capabilities across all domains.
+                          </p>
+                          <div className="bg-slate-200/50 dark:bg-slate-700/50 rounded-lg p-4">
+                            <h3 className="font-semibold text-slate-900 dark:text-white mb-2">What to Expect:</h3>
+                            <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-gray-300">
+                              <li>Cross-functional scenario-based challenges</li>
+                              <li>Real-world incident response simulations</li>
+                              <li>Decision-making under pressure</li>
+                              <li>Team coordination exercises</li>
+                              <li>Risk assessment across multiple domains</li>
+                            </ul>
+                          </div>
+                          <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                            <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Benefits:</h3>
+                            <ul className="list-disc list-inside space-y-2 text-blue-700 dark:text-blue-300">
+                              <li>Identify gaps in incident response procedures</li>
+                              <li>Improve cross-team communication</li>
+                              <li>Test and validate response playbooks</li>
+                              <li>Enhance overall security posture</li>
+                            </ul>
+                          </div>
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.4 }}
+                            className="flex justify-center mt-6"
+                          >
+                            <button
+                              onClick={handleStartGenericAssessment}
+                              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+                            >
+                              Start General Assessment
+                              <ArrowRight className="w-5 h-5" />
+                            </button>
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    </CardItem>
+                  </CardBody>
+                </CardContainer>
+
+                <CardContainer>
+                  <CardBody>
+                    <CardItem>
+                      <motion.div
+                        initial={{ opacity: 0, x: 20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 }}
+                        className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                      >
+                        <div className="flex items-center gap-4 mb-4">
+                          <Users className="h-8 w-8 text-blue-500" />
+                          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Role-Based Assessment</h2>
+                        </div>
+                        <p className="text-slate-700 dark:text-gray-300 mb-6">Select one or more roles to take a specialized assessment.</p>
+                        
+                        <div className="bg-slate-200/50 dark:bg-slate-700/50 rounded-lg p-4 mb-6">
+                          <h3 className="font-semibold text-slate-900 dark:text-white mb-2">What to Expect:</h3>
+                          <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-gray-300">
+                            <li>Role-specific scenarios and challenges</li>
+                            <li>Tailored questions for your expertise</li>
+                            <li>Focused assessment on your responsibilities</li>
+                          </ul>
+                        </div>
+                        
+                        <div className="relative">
+                          <div className="max-h-[300px] overflow-y-auto pr-4 role-scrollbar">
+                            <div className="grid grid-cols-1 gap-3">
+                              {roles.map((role, index) => (
+                                <motion.div
+                                  key={role}
+                                  initial={{ opacity: 0, y: 20 }}
+                                  animate={{ opacity: 1, y: 0 }}
+                                  transition={{ duration: 0.3, delay: 0.1 * index }}
+                                  onClick={() => handleRoleSelect(role)}
+                                  className={`p-4 rounded-xl cursor-pointer transition-all duration-300 backdrop-blur-sm ${
+                                    selectedRoles.includes(role)
+                                      ? 'bg-blue-600/90 border-2 border-blue-400 shadow-lg scale-105'
+                                      : 'bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200/80 dark:hover:bg-slate-600/80'
+                                  }`}
+                                >
+                                  <h3 className={`font-medium text-lg ${
+                                    selectedRoles.includes(role)
+                                      ? 'text-white'
+                                      : 'text-slate-900 dark:text-white'
+                                  }`}>{role}</h3>
+                                </motion.div>
+                              ))}
+                            </div>
+                          </div>
+                          <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-100/80 dark:from-slate-800/80 to-transparent pointer-events-none rounded-b-xl"></div>
+                        </div>
+
+                        {selectedRoles.length > 0 && (
+                          <motion.div
+                            initial={{ opacity: 0, y: 20 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            transition={{ duration: 0.5, delay: 0.6 }}
+                            className="flex justify-center mt-6"
+                          >
+                            <button
+                              onClick={handleStartRoleBasedAssessment}
+                              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
+                            >
+                              Start Assessment
+                              <ArrowRight className="w-5 h-5" />
+                            </button>
+                          </motion.div>
+                        )}
+                      </motion.div>
+                    </CardItem>
+                  </CardBody>
+                </CardContainer>
+              </div>
+            </div>
+          </div>
+
+          <footer className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm py-8 mt-12">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-gray-400">
+                <ShieldIcon className="h-6 w-6" />
+                <span>© 2025 Ransomware Protection. All rights reserved.</span>
+              </div>
+            </div>
+          </footer>
+        </div>
+      </div>
+    );
+  }
+
+  if (!isUserAuthenticated) {
+    return (
+      <div className={`min-h-screen ${theme === 'dark' ? 'bg-gray-900 text-white' : 'bg-white'}`}>
+        <GridBackgroundDemo />
+        <div className="relative z-10 min-h-screen bg-white/50 dark:bg-black/50 flex items-center justify-center">
+          <form
+            onSubmit={e => {
+              e.preventDefault();
+              setIsUserLoading(true);
+              setTimeout(() => {
+                if (
+                  userCredentials.email === 'us@gmail.com' &&
+                  userCredentials.password === '123'
+                ) {
+                  setIsUserAuthenticated(true);
+                  setUserLoginError('');
+                } else {
+                  setUserLoginError('Invalid credentials');
+                }
+                setIsUserLoading(false);
+              }, 500);
+            }}
+            className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg w-full max-w-md"
+          >
+            <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6 text-center">User Login</h2>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Email</label>
+              <input
+                type="email"
+                value={userCredentials.email}
+                onChange={e => setUserCredentials(prev => ({ ...prev, email: e.target.value }))}
+                className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                required
+                disabled={isUserLoading}
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-300 mb-2">Password</label>
+              <input
+                type="password"
+                value={userCredentials.password}
+                onChange={e => setUserCredentials(prev => ({ ...prev, password: e.target.value }))}
+                className="w-full px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 text-slate-900 dark:text-white"
+                required
+                disabled={isUserLoading}
+              />
+            </div>
+            {userLoginError && (
+              <div className="text-red-600 dark:text-red-400 mb-4 text-center">{userLoginError}</div>
+            )}
+            <button
+              type="submit"
+              className={`bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-6 rounded-lg w-full transition-all ${
+                isUserLoading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
+              disabled={isUserLoading}
+            >
+              {isUserLoading ? 'Logging in...' : 'Login'}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="min-h-screen relative">
+    <div className={`min-h-screen ${theme === 'dark' ? 'dark bg-gray-900' : 'bg-gray-50'}`}>
       <GridBackgroundDemo />
       <div className="relative z-10 min-h-screen bg-white/50 dark:bg-black/50">
-        <FloatingNav navItems={navItems} isDark={isDark} toggleTheme={toggleTheme} />
+        <FloatingNav navItems={navItems} isDark={theme === 'dark'} toggleTheme={() => setTheme(theme === 'dark' ? 'light' : 'dark')} />
 
-        {/* Main Content */}
-        <div className="pt-24">
-          {/* Hero Section */}
+        <div className="pt-24 relative z-20">
           <header className="relative overflow-hidden">
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
               <div className="text-center">
+                <div className="flex justify-between items-center mb-8">
+                  <button
+                    onClick={handleBackToRoleSelection}
+                    className="flex items-center gap-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors"
+                  >
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                      <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L5.414 9H17a1 1 0 110 2H5.414l4.293 4.293a1 1 0 010 1.414z" clipRule="evenodd" />
+                    </svg>
+                    Back to Role Selection
+                  </button>
+                  <div className="flex items-center gap-2">
+                    <span className="text-sm text-slate-600 dark:text-slate-400">Selected Roles:</span>
+                    <div className="flex flex-wrap gap-2">
+                      {selectedRoles.map((role) => (
+                        <span
+                          key={role}
+                          className="px-2 py-1 bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 rounded-full text-sm"
+                        >
+                          {role}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </div>
                 <Shield className="h-20 w-20 text-blue-500 dark:text-blue-600 mx-auto mb-8" />
                 <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-6">
-                  Legal Division - Ransomware Attack Scenario
+                  Ransomware Attack Scenario
                 </h1>
                 <p className="text-xl text-slate-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
                   The Security Operations Center (SOC) has detected a sophisticated ransomware attack targeting critical IT systems. 
@@ -851,12 +876,12 @@ function App() {
             </div>
           </header>
 
-          {/* Risk Cards Grid */}
           <section className="py-20 px-4">
             <div className="max-w-7xl mx-auto">
               <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">Risk Cards</h2>
+             
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {riskCards.map((card) => (
+                {filteredRiskCards.map((card) => (
                   <motion.div
                     key={card.id}
                     className={`bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-8 rounded-xl cursor-pointer transform transition-all duration-300 hover:scale-105 ${
@@ -866,17 +891,45 @@ function App() {
                     whileHover={{ y: -5 }}
                   >
                     <div>
-                      {card.icon}
+                      <RiskCardIcon iconName={card.icon} className="h-12 w-12 text-red-500" />
                       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{card.title}</h3>
                       <p className="text-slate-700 dark:text-gray-300">{card.description}</p>
+                      <div className="mt-4">
+                        <p className="text-sm text-slate-600 dark:text-gray-400">Relevant Roles:</p>
+                        <div className="flex flex-wrap gap-2 mt-2">
+                          {selectedRoles.map((role) => (
+                            <span 
+                              key={role}
+                              className={`px-2 py-1 rounded-full text-xs ${
+                                selectedRoles.includes(role)
+                                  ? 'bg-blue-500 text-white'
+                                  : 'bg-slate-200 dark:bg-slate-700 text-slate-600 dark:text-gray-300'
+                              }`}
+                            >
+                              {role}
+                            </span>
+                          ))}
+                        </div>
+                      </div>
                     </div>
                   </motion.div>
                 ))}
               </div>
+
+              <button
+                disabled={completedRiskCards.length < 7}
+                onClick={() => setShowFinalAnalytics(true)}
+                className={`mt-8 px-6 py-3 rounded-lg font-bold transition ${
+                  completedRiskCards.length < 7
+                    ? 'bg-gray-400 text-white cursor-not-allowed'
+                    : 'bg-indigo-600 text-white hover:bg-indigo-700'
+                }`}
+              >
+                Final Analytics
+              </button>
             </div>
           </section>
 
-          {/* Footer */}
           <footer className="bg-white/80 dark:bg-slate-900/80 backdrop-blur-sm py-12">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-gray-400">
@@ -888,205 +941,194 @@ function App() {
         </div>
       </div>
 
-      {/* Expanded Card View */}
       <AnimatePresence>
         {selectedCard && (
           <motion.section
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 50 }}
-            className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center p-4 z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50 backdrop-blur-sm"
+            onClick={(e) => {
+              if (e.target === e.currentTarget) {
+                setSelectedCard(null);
+              }
+            }}
           >
-            <div className="bg-white dark:bg-slate-800 rounded-xl w-[75vw] max-h-[90vh] overflow-y-auto">
-              <div className="p-8">
-                <div className="flex justify-between items-start mb-8">
-                  <div>
-                    <h3 className="text-2xl font-bold text-slate-900 dark:text-white mb-2">
-                      {riskCards.find(c => c.id === selectedCard)?.title}
-                    </h3>
-                    <p className="text-red-600 dark:text-red-400 font-semibold">
-                      Impact: {riskCards.find(c => c.id === selectedCard)?.impact}
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setSelectedCard(null)}
-                    className="text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white"
-                  >
-                    ✕
-                  </button>
-                </div>
-
-                {!showResults && (
-                  <div className="bg-slate-100 dark:bg-slate-700 p-6 rounded-lg mb-8">
-                    <h4 className="text-xl font-semibold text-slate-900 dark:text-white mb-4">Scenario</h4>
-                    <p className="text-slate-700 dark:text-gray-300">
-                      {riskCards.find(c => c.id === selectedCard)?.scenario}
-                    </p>
-                  </div>
-                )}
-
-                {showResults ? (
-                  <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-6">
-                    <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Assessment Report</h4>
-                    <div className="mb-6">
-                      <div className="bg-slate-200 dark:bg-slate-800 p-4 rounded-lg mb-4">
-                        <h5 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">Summarized Report</h5>
-                        <p className="text-slate-700 dark:text-gray-300">
-                          {`You have completed ${riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management assessment. Your score is ${calculateTotalScore()}/25.${answeredQuestions.filter(isCorrect => !isCorrect).length > 0 ? ' Review the areas for improvement to strengthen your response strategy.' : ''}`}
-                        </p>
+            <div 
+              className={`bg-white dark:bg-slate-800 rounded-xl overflow-y-auto shadow-2xl ${
+                showAnalytics ? 'w-[90%] h-[90%]' : 'w-3/4 h-3/4'
+              }`}
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="p-6 md:p-8 h-full flex flex-col">
+                <button 
+                  onClick={() => {
+                    setSelectedCard(null);
+                    setShowAnalytics(false);
+                  }}
+                  className="mb-4 text-blue-600 dark:text-blue-400 hover:underline flex items-center text-sm"
+                >
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                  Back to Risk Cards
+                </button>
+                
+                <h3 className="text-2xl font-bold mb-6 text-center text-slate-900 dark:text-white flex-shrink-0">
+                  {showAnalytics ? 'Analytics Dashboard' : riskCards.find(c => c.id === selectedCard)?.title + ' Assessment'}
+                </h3>
+               
+                <div className="flex-grow overflow-y-auto">
+                  {!showAnalytics ? (
+                    !getCurrentQuestion() ? (
+                      <div className="p-6 text-center text-slate-700 dark:text-gray-300">
+                        Loading question...
                       </div>
-                      <p className="text-xl text-slate-900 dark:text-white mb-4">
-                        Score: {calculateTotalScore()} out of 25
-                      </p>
-                      
-                      <>
-                        <p className="text-lg text-green-600 dark:text-green-400 mb-4">
-                          Assessment Complete
-                        </p>
-                        <div className="mb-4">
-                          <p className="text-lg text-slate-900 dark:text-white mb-2">Performance Analysis:</p>
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg">
-                              <p className="font-semibold mb-2 text-slate-900 dark:text-white">Correct Answers:</p>
-                              {answeredQuestions.map((isCorrect, index) => (
-                                isCorrect && (
-                                  <p key={index} className="text-green-600 dark:text-white">
-                                    ✓ Question {index + 1}
-                                  </p>
-                                )
-                              ))}
-                            </div>
-                            <div className="bg-slate-200 dark:bg-slate-600 p-4 rounded-lg">
-                              <p className="font-semibold mb-2 text-slate-900 dark:text-white">Areas for Improvement:</p>
-                              {answeredQuestions.map((isCorrect, index) => (
-                                !isCorrect && (
-                                  <div key={index} className="mb-2">
-                                    <p className="text-red-600 dark:text-white">
-                                      ✗ Question {index + 1}
-                                    </p>
-                                    <p className="text-slate-600 dark:text-white text-sm">
-                                      {riskCards.find(c => c.id === selectedCard)?.questions[index].explanation}
-                                    </p>
-                                  </div>
-                                )
-                              ))}
-                            </div>
+                    ) : showResults ? (
+                      <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-6">
+                        <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Assessment Complete</h4>
+                        <div className="flex flex-col items-center justify-center space-y-6">
+                          <p className="text-lg text-slate-700 dark:text-gray-300 text-center">
+                            You have completed the {riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management assessment.
+                          </p>
+                          <div className="flex justify-center space-x-4">
+                            <button
+                              onClick={() => setShowAnalytics(true)}
+                              className="flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
+                            >
+                              <BarChart2 className="w-5 h-5 mr-2" />
+                              View Analytics
+                            </button>
+                            <button
+                              onClick={handleBackToRoleSelection}
+                              className="flex items-center px-6 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors"
+                            >
+                              Return to Home Screen
+                            </button>
                           </div>
                         </div>
-                        {selectedCard !== riskCards[riskCards.length - 1].id ? (
-                          <button
-                            onClick={() => {
-                              const currentIndex = riskCards.findIndex(c => c.id === selectedCard);
-                              handleCardClick(riskCards[currentIndex + 1].id);
-                            }}
-                            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full"
-                          >
-                            Next Risk Card
-                          </button>
-                        ) : (
-                          <button
-                            onClick={() => setSelectedCard(null)}
-                            className="px-6 py-2 bg-green-600 hover:bg-green-700 text-white rounded-full"
-                          >
-                            Return to Main Page
-                          </button>
-                        )}
-                      </>
-                    </div>
-                  </div>
-                ) : (
-                  <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-6">
-                    <div className="mb-8">
-                      <div className="flex justify-between items-center mb-4">
-                        <h4 className="text-xl text-slate-900 dark:text-white">
-                          Question {currentQuestionIndex + 1} of {riskCards.find(c => c.id === selectedCard)?.questions.length}
-                        </h4>
-                        <button
-                          onClick={handleHintClick}
-                          disabled={hintCounts[currentQuestionIndex] >= 2}
-                          className="flex items-center space-x-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50"
-                        >
-                          <span>💡</span>
-                          <span>Hint ({2 - hintCounts[currentQuestionIndex]} left)</span>
-                        </button>
                       </div>
+                    ) : (
+                      <div>
+                        {(() => {
+                          const currentQ = getCurrentQuestion();
+                          console.log('Current Question Object:', currentQ);
+                          console.log('Scenario for Current Question:', currentQ?.scenario);
+                          return null;
+                        })()}
 
-                      {showHint && (
-                        <div className="bg-blue-100/50 dark:bg-blue-900/50 p-4 rounded-lg mb-4 animate-fade-in">
-                          <p className="text-blue-900 dark:text-blue-200 font-semibold">Hint:</p>
-                          <p className="text-blue-900 dark:text-blue-200">
-                            {riskCards.find(c => c.id === selectedCard)?.questions[currentQuestionIndex].hints?.[hintCounts[currentQuestionIndex] - 1]}
+                        {getCurrentQuestion()?.scenario && (
+                           <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                             <h5 className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-1">Scenario:</h5>
+                             <p className="text-sm text-blue-700 dark:text-blue-200">
+                               {getCurrentQuestion()?.scenario}
+                             </p>
+                           </div>
+                         )}
+
+                        <div className="mb-8">
+                          <div className="flex justify-between items-center mb-4">
+                            <div>
+                              <h4 className="text-xl text-slate-900 dark:text-white">
+                                Question {currentQuestionIndex + 1} of {currentRiskCardQuestions.length}
+                              </h4>
+                            </div>
+                            <button
+                              onClick={handleHintClick}
+                              disabled={hintCounts[currentQuestionIndex] >= (getCurrentQuestion()?.hints?.length || 0) || selectedAnswers.length > 0}
+                              className={`flex items-center space-x-2 text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 disabled:opacity-50 ${selectedAnswers.length > 0 ? 'cursor-not-allowed' : ''}`}
+                            >
+                              <span>💡</span>
+                              <span>Hint ({(getCurrentQuestion()?.hints?.length || 0) - (hintCounts[currentQuestionIndex] || 0)} left)</span>
+                            </button>
+                          </div>
+
+                           {showHint && getCurrentQuestion()?.hints && getCurrentQuestion()!.hints!.length >= hintCounts[currentQuestionIndex] && hintCounts[currentQuestionIndex] > 0 && (
+                             <div className="bg-blue-100/50 dark:bg-blue-900/50 p-4 rounded-lg mb-4 animate-fade-in">
+                               <p className="text-blue-900 dark:text-blue-200 font-semibold">Hint {hintCounts[currentQuestionIndex]}:</p>
+                               <p className="text-blue-900 dark:text-blue-200">
+                                 {getCurrentQuestion()!.hints?.[hintCounts[currentQuestionIndex] - 1]}
+                               </p>
+                             </div>
+                           )}
+
+                          <p className="text-lg text-slate-900 dark:text-gray-200 min-h-[60px]">
+                            {getCurrentQuestion()?.question}
                           </p>
                         </div>
-                      )}
 
-                      <p className="text-slate-900 dark:text-gray-200">
-                        {riskCards.find(c => c.id === selectedCard)?.questions[currentQuestionIndex].question}
-                      </p>
-                    </div>
+                        <div className="space-y-4 mb-8">
+                          {getCurrentQuestion()?.options.map((option: string, index: number) => (
+                            <button
+                              key={index}
+                              className={`w-full text-left p-4 rounded-lg transition-colors flex justify-between items-center border-2 ${
+                                selectedAnswers.length > 0 
+                                  ? 'cursor-not-allowed' 
+                                  : 'hover:border-blue-500 dark:hover:border-blue-400'
+                              } ${
+                                selectedAnswers.includes(index)
+                                  ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-500 dark:border-blue-400 text-blue-800 dark:text-white'
+                                  : 'bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-gray-200'
+                              }`}
+                              onClick={() => handleAnswerSelect(index)}
+                              disabled={selectedAnswers.length > 0}
+                            >
+                              <span>{option}</span>
+                              {selectedAnswers.includes(index) && (
+                                <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+                              )}
+                            </button>
+                          ))}
+                        </div>
 
-                    <div className="space-y-4 mb-8">
-                      {riskCards
-                        .find(c => c.id === selectedCard)
-                        ?.questions[currentQuestionIndex].options.map((option, index) => (
+                        <div className="flex justify-between">
                           <button
-                            key={index}
-                            className={`w-full text-left p-4 rounded-lg transition-colors flex justify-between items-center ${
-                              selectedAnswer === index
-                                ? selectedAnswer === riskCards.find(c => c.id === selectedCard)?.questions[currentQuestionIndex].correctAnswer
-                                  ? 'bg-green-600 text-white'
-                                  : 'bg-red-600 text-white'
-                                : 'bg-slate-200 dark:bg-slate-600 text-slate-900 dark:text-gray-200 hover:bg-slate-300 dark:hover:bg-slate-500'
+                            onClick={handlePrevQuestion}
+                            disabled={currentQuestionIndex === 0}
+                            className={`px-6 py-2 rounded-full transition-colors ${
+                              currentQuestionIndex === 0
+                                ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-slate-500 dark:text-gray-400'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
                             }`}
-                            onClick={() => handleAnswerSelect(index)}
-                            disabled={selectedAnswer !== null}
                           >
-                            <span>{option}</span>
-                            {selectedAnswer === index && (
-                              selectedAnswer === riskCards.find(c => c.id === selectedCard)?.questions[currentQuestionIndex].correctAnswer
-                                ? <CheckCircle className="h-6 w-6 text-white" />
-                                : <XCircle className="h-6 w-6 text-white" />
-                            )}
+                            Previous
                           </button>
-                        ))}
-                    </div>
-
-                    {selectedAnswer !== null && (
-                      <div className="mb-6 p-4 bg-blue-100 dark:bg-blue-900 rounded-lg">
-                        <p className="text-blue-900 dark:text-blue-100 font-semibold">Right Approach:</p>
-                        <p className="text-blue-800 dark:text-blue-200">
-                          {riskCards.find(c => c.id === selectedCard)?.questions[currentQuestionIndex].explanation}
-                        </p>
+                          <button
+                            onClick={handleNextQuestion}
+                            disabled={selectedAnswers.length === 0}
+                            className={`px-6 py-2 rounded-full transition-colors ${
+                              selectedAnswers.length === 0
+                                ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-slate-500 dark:text-gray-400'
+                                : 'bg-blue-600 hover:bg-blue-700 text-white'
+                            }`}
+                          >
+                            Next
+                          </button>
+                        </div>
                       </div>
-                    )}
-
-                    <div className="flex justify-between">
-                      <button
-                        onClick={handlePrevQuestion}
-                        disabled={currentQuestionIndex === 0}
-                        className={`px-6 py-2 rounded-full ${
-                          currentQuestionIndex === 0
-                            ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-slate-600 dark:text-white'
-                            : 'bg-blue-600 dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700 text-white'
-                        }`}
-                      >
-                        Previous
-                      </button>
-                      <button
-                        onClick={handleNextQuestion}
-                        disabled={selectedAnswer === null}
-                        className={`px-6 py-2 rounded-full ${
-                          selectedAnswer === null
-                            ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-slate-600 dark:text-white'
-                            : 'bg-blue-600 dark:bg-blue-600 hover:bg-blue-700 dark:hover:bg-blue-700 text-white'
-                        }`}
-                      >
-                        Next
-                      </button>
+                    )
+                  ) : (
+                    <div className="p-4">
+                      <div className="mb-6">
+                        <button
+                          onClick={() => setShowAnalytics(false)}
+                          className="flex items-center px-4 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+                        >
+                          ← Back to Results
+                        </button>
+                      </div>
+                      <Analytics
+                        answeredQuestions={answeredQuestions}
+                        hintCounts={hintCounts}
+                        currentRiskCardQuestions={currentRiskCardQuestions}
+                        selectedRoles={selectedRoles}
+                        totalScore={calculateTotalScore()}
+                      />
                     </div>
-                  </div>
-                )}
-              </div>
+                  )}
+                </div>
+              </div> 
             </div>
           </motion.section>
         )}

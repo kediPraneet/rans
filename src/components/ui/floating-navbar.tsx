@@ -7,6 +7,7 @@ interface NavItem {
   name: string;
   link: string;
   icon?: JSX.Element;
+  onClick?: () => void;
 }
 
 interface FloatingNavProps {
@@ -64,8 +65,14 @@ export const FloatingNav = ({
           <a
             key={`link-${idx}`}
             href={navItem.link}
+            onClick={(e) => {
+              if (navItem.onClick) {
+                e.preventDefault();
+                navItem.onClick();
+              }
+            }}
             className={cn(
-              "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500"
+              "relative dark:text-neutral-50 items-center flex space-x-1 text-neutral-600 dark:hover:text-neutral-300 hover:text-neutral-500 cursor-pointer"
             )}
           >
             <span className="block sm:hidden">{navItem.icon}</span>
