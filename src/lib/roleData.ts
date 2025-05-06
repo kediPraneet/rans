@@ -1,5 +1,3 @@
-import { Building2, Banknote, Bell, Users, MessageSquare, Target, Shield, AlertTriangle, Lock, BookOpen, CheckCircle } from 'lucide-react';
-
 export interface Question {
   question: string;
   options: string[];

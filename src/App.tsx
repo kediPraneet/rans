@@ -1,15 +1,25 @@
 import React, { useState, useEffect } from 'react';
-import { Shield, AlertTriangle, Lock, BookOpen, ArrowRight, Shield as ShieldIcon, Building2, Banknote, Bell, Users, MessageSquare, Target, CheckCircle, XCircle, UserCog, BarChart2 } from 'lucide-react';
+import { Shield, Lock, BookOpen, ArrowRight, Shield as ShieldIcon, Users, CheckCircle, UserCog, BarChart2 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingNav } from './components/ui/floating-navbar';
 import GridBackgroundDemo from './components/ui/grid-background-demo';
-import RoleCard from './components/RoleCard';
 import { riskCards, RiskCard, Question } from './lib/roleData';
 import { RiskCardIcon } from './components/RiskCardIcon';
 import { assessmentStore, AssessmentData } from './lib/assessmentStore';
 import { Analytics } from './components/Analytics';
-import { CardContainer, CardBody, CardItem } from "@/components/ui/3d-card";
+import { io } from 'socket.io-client';
 
+// Add type definitions at the top of the file
+type SocketMessage = {
+  type: 'question_display' | 'answer_selection' | 'hint_used' | 'navigation' | 'results_display';
+  data: any;
+};
+
+type ClientInfo = {
+  id: string;
+  connectedAt: string;
+  lastActivity: string;
+};
 
 function shuffleArray<T>(array: T[]): T[] {
   let currentIndex = array.length, randomIndex;
@@ -30,7 +40,6 @@ function App() {
   const [selectedAnswers, setSelectedAnswers] = useState<number[]>([]);
   const [showHints, setShowHints] = useState(false);
   const [theme, setTheme] = useState<'light' | 'dark'>('light');
-  const [correctAnswers, setCorrectAnswers] = useState<number>(0);
   const [showResults, setShowResults] = useState(false);
   const [answeredQuestions, setAnsweredQuestions] = useState<boolean[]>([]);
   const [hintCounts, setHintCounts] = useState<number[]>([]);
@@ -50,6 +59,17 @@ function App() {
   const [isUserLoading, setIsUserLoading] = useState(false);
   const [completedRiskCards, setCompletedRiskCards] = useState<string[]>([]);
   const [showFinalAnalytics, setShowFinalAnalytics] = useState(false);
+  const [socket, setSocket] = useState<any>(null);
+
+  // Add new state variables for admin mirroring
+  const [mirroredQuestion, setMirroredQuestion] = useState<any>(null);
+  const [mirroredAnswer, setMirroredAnswer] = useState<any>(null);
+  const [mirroredHints, setMirroredHints] = useState<number[]>([]);
+  const [mirroredResults, setMirroredResults] = useState<any>(null);
+  const [activeClient, setActiveClient] = useState<string | null>(null);
+
+  // Add new state for connected clients
+  const [connectedClients, setConnectedClients] = useState<ClientInfo[]>([]);
 
   const roles = [
     'CFO',
@@ -99,10 +119,114 @@ function App() {
   }, [selectedRoles]);
 
   useEffect(() => {
+    setAssessments(assessmentStore.getAssessments());
+  }, []);
+
+  useEffect(() => {
     if (isAdmin) {
       setAssessments(assessmentStore.getAssessments());
     }
   }, [isAdmin]);
+
+  useEffect(() => {
+    // Create socket connection
+    const newSocket = io('http://localhost:3001');
+    console.log('Socket connection created:', newSocket.id);
+    setSocket(newSocket);
+
+    // Cleanup on unmount
+    return () => {
+      console.log('Socket connection closed:', newSocket.id);
+      newSocket.close();
+    };
+  }, []);
+
+  // Add socket listeners in useEffect
+  useEffect(() => {
+    if (isAdmin && socket) {
+      console.log('Admin socket listeners setup for socket:', socket.id);
+      
+      // Listen for client messages
+      socket.on('messageToAdmin', (message: SocketMessage) => {
+        console.log('Received message in admin view:', message);
+        
+        switch (message.type) {
+          case 'question_display':
+            setMirroredQuestion(message.data);
+            setMirroredAnswer(null);
+            setMirroredHints([]);
+            setMirroredResults(null);
+            break;
+            
+          case 'answer_selection':
+            console.log('Received answer selection:', message.data);
+            setMirroredAnswer({
+              selectedAnswerIndex: message.data.selectedAnswerIndex,
+              selectedAnswerText: message.data.selectedAnswerText,
+              questionIndex: message.data.questionIndex
+            });
+            break;
+            
+          case 'hint_used':
+            setMirroredHints(prev => {
+              const newHints = [...prev];
+              newHints[message.data.questionIndex] = message.data.hintNumber;
+              return newHints;
+            });
+            break;
+            
+          case 'navigation':
+            // Navigation is handled by question_display event
+            break;
+            
+          case 'results_display':
+            setMirroredResults(message.data);
+            break;
+        }
+      });
+
+      // Listen for initial client list
+      socket.on('clientList', (clients: [string, ClientInfo][]) => {
+        console.log('Received initial client list:', clients);
+        setConnectedClients(clients.map(([_, info]) => info));
+      });
+
+      // Listen for new client connections
+      socket.on('clientConnected', (clientInfo: ClientInfo) => {
+        console.log('New client connected:', clientInfo);
+        setConnectedClients(prev => {
+          // Check if client already exists
+          if (prev.some(client => client.id === clientInfo.id)) {
+            return prev;
+          }
+          return [...prev, clientInfo];
+        });
+      });
+
+      // Listen for client disconnections
+      socket.on('clientDisconnected', (clientId: string) => {
+        console.log('Client disconnected:', clientId);
+        setConnectedClients(prev => prev.filter(client => client.id !== clientId));
+        
+        // If the disconnected client was being viewed, clear the view
+        if (activeClient === clientId) {
+          setActiveClient(null);
+          setMirroredQuestion(null);
+          setMirroredAnswer(null);
+          setMirroredHints([]);
+          setMirroredResults(null);
+        }
+      });
+
+      return () => {
+        console.log('Cleaning up admin socket listeners');
+        socket.off('messageToAdmin');
+        socket.off('clientList');
+        socket.off('clientConnected');
+        socket.off('clientDisconnected');
+      };
+    }
+  }, [isAdmin, socket, activeClient]);
 
   const getFilteredQuestions = (card: RiskCard): Question[] => {
     console.log(`Ignoring card theme (${card.title}). Selecting questions based ONLY on roles: ${selectedRoles.join(', ')}`);
@@ -152,11 +276,21 @@ function App() {
       setCurrentRiskCardQuestions(questions);
       setHintCounts(new Array(questions.length).fill(0));
       console.log('Questions set for this card:', questions.map(q => q.question));
+      
+      // Emit question display event
+      socket?.emit('messageFromClient', {
+        type: 'question_display',
+        data: {
+          cardId,
+          questionIndex: 0,
+          question: questions[0],
+          timestamp: new Date().toISOString()
+        }
+      });
     }
     setCurrentQuestionIndex(0);
     setSelectedAnswers([]);
     setShowHints(false);
-    setCorrectAnswers(0);
     setShowResults(false);
     setAnsweredQuestions([]);
     setShowHint(false);
@@ -177,6 +311,18 @@ function App() {
         newHintCounts[currentQuestionIndex]++;
         setHintCounts(newHintCounts);
         setShowHint(true);
+
+        // Emit hint used event
+        socket?.emit('messageFromClient', {
+          type: 'hint_used',
+          data: {
+            cardId: selectedCard,
+            questionIndex: currentQuestionIndex,
+            hintNumber: newHintCounts[currentQuestionIndex],
+            hintText: currentQuestion.hints[newHintCounts[currentQuestionIndex] - 1],
+            timestamp: new Date().toISOString()
+          }
+        });
     }
   };
 
@@ -196,7 +342,11 @@ function App() {
 
   const handleAnswerSelect = (answerIndex: number) => {
     console.log('Answer selected:', answerIndex);
-    setSelectedAnswers([answerIndex]);
+    setSelectedAnswers(prev => {
+      const newAnswers = [...prev];
+      newAnswers[currentQuestionIndex] = answerIndex;
+      return newAnswers;
+    });
     
     const currentQuestion = getCurrentQuestion();
     if (currentQuestion) {
@@ -205,10 +355,22 @@ function App() {
       setAnsweredQuestions(prevAnswers => {
         const newAnswers = [...prevAnswers];
         while (newAnswers.length <= currentQuestionIndex) {
-            newAnswers.push(false);
+          newAnswers.push(false);
         }
         newAnswers[currentQuestionIndex] = isCorrect;
         return newAnswers;
+      });
+
+      // Emit answer selection event
+      socket?.emit('messageFromClient', {
+        type: 'answer_selection',
+        data: {
+          cardId: selectedCard,
+          questionIndex: currentQuestionIndex,
+          selectedAnswerIndex: answerIndex,
+          selectedAnswerText: currentQuestion.options[answerIndex],
+          timestamp: new Date().toISOString()
+        }
       });
     }
   };
@@ -216,9 +378,35 @@ function App() {
   const handleNextQuestion = () => {
     console.log('Moving to next question');
     if (currentQuestionIndex < currentRiskCardQuestions.length - 1) {
-      setCurrentQuestionIndex(prev => prev + 1);
+      const fromIndex = currentQuestionIndex;
+      const toIndex = currentQuestionIndex + 1;
+      setCurrentQuestionIndex(toIndex);
       setSelectedAnswers([]);
       setShowHint(false);
+
+      // Emit navigation event
+      socket?.emit('messageFromClient', {
+        type: 'navigation',
+        data: {
+          cardId: selectedCard,
+          fromQuestionIndex: fromIndex,
+          toQuestionIndex: toIndex,
+          action: 'next',
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      // Emit question display event for the new question
+      const nextQuestion = currentRiskCardQuestions[toIndex];
+      socket?.emit('messageFromClient', {
+        type: 'question_display',
+        data: {
+          cardId: selectedCard,
+          questionIndex: toIndex,
+          question: nextQuestion,
+          timestamp: new Date().toISOString()
+        }
+      });
     } else {
       console.log('Showing results');
       setShowResults(true);
@@ -240,34 +428,64 @@ function App() {
       };
       assessmentStore.addAssessment(assessmentData);
 
+      // Emit results display event
+      socket?.emit('messageFromClient', {
+        type: 'results_display',
+        data: {
+          cardId: selectedCard,
+          totalScore: calculateTotalScore(),
+          maxScore: 25,
+          answers: currentRiskCardQuestions.map((q, index) => ({
+            questionIndex: index,
+            isCorrect: answeredQuestions[index],
+            selectedAnswer: selectedAnswers[index] !== undefined ? q.options[selectedAnswers[index]] : '',
+            correctAnswer: q.options[q.correctAnswer],
+            hintsUsed: hintCounts[index] || 0
+          })),
+          timestamp: new Date().toISOString()
+        }
+      });
+
       if (selectedCard && !completedRiskCards.includes(selectedCard)) {
         setCompletedRiskCards(prev => [...prev, selectedCard]);
       }
+
+      setAssessments(assessmentStore.getAssessments());
     }
   };
 
   const handlePrevQuestion = () => {
     if (currentQuestionIndex > 0) {
-      setCurrentQuestionIndex(prev => prev - 1);
+      const fromIndex = currentQuestionIndex;
+      const toIndex = currentQuestionIndex - 1;
+      setCurrentQuestionIndex(toIndex);
       setSelectedAnswers([]);
       setShowHint(false);
+
+      // Emit navigation event
+      socket?.emit('messageFromClient', {
+        type: 'navigation',
+        data: {
+          cardId: selectedCard,
+          fromQuestionIndex: fromIndex,
+          toQuestionIndex: toIndex,
+          action: 'previous',
+          timestamp: new Date().toISOString()
+        }
+      });
+
+      // Emit question display event for the previous question
+      const prevQuestion = currentRiskCardQuestions[toIndex];
+      socket?.emit('messageFromClient', {
+        type: 'question_display',
+        data: {
+          cardId: selectedCard,
+          questionIndex: toIndex,
+          question: prevQuestion,
+          timestamp: new Date().toISOString()
+        }
+      });
     }
-  };
-
-  const getPerformanceMessage = (score: number, total: number) => {
-    const percentage = (score / total) * 100;
-    if (percentage === 100) return "Excellent! You have a perfect understanding of operational disruption handling.";
-    if (percentage >= 80) return "Great job! You have a strong grasp of the concepts with minor areas for improvement.";
-    if (percentage >= 60) return "Good effort! Consider reviewing the areas where you made mistakes.";
-    return "You might benefit from additional training on operational disruption procedures.";
-  };
-
-  const handleRestartQuiz = () => {
-    setCurrentQuestionIndex(0);
-    setSelectedAnswers([]);
-    setCorrectAnswers(0);
-    setShowResults(false);
-    setAnsweredQuestions([]);
   };
 
   const handleBackToRoleSelection = () => {
@@ -276,7 +494,6 @@ function App() {
     setCurrentQuestionIndex(0);
     setSelectedAnswers([]);
     setShowHints(false);
-    setCorrectAnswers(0);
     setShowResults(false);
     setAnsweredQuestions([]);
     setHintCounts([]);
@@ -302,6 +519,9 @@ function App() {
         setIsAdmin(true);
         setShowAdminLogin(false);
         setAssessments(assessmentStore.getAssessments());
+        // Register socket as admin
+        console.log('Registering socket as admin:', socket?.id);
+        socket?.emit('register', 'admin');
       } else {
         console.log('Admin login failed');
         alert('Invalid credentials');
@@ -316,6 +536,18 @@ function App() {
     setShowAdminLogin(false);
     setAdminCredentials({ email: '', password: '' });
     setAssessments([]);
+    // Clean up socket registration
+    socket?.emit('register', 'none');
+  };
+
+  // Add user logout handler
+  const handleUserLogout = () => {
+    console.log('User logging out');
+    setIsUserAuthenticated(false);
+    setUserCredentials({ email: '', password: '' });
+    setUserLoginError('');
+    // Clean up socket registration
+    socket?.emit('register', 'none');
   };
 
   if (showAdminLogin) {
@@ -416,6 +648,141 @@ function App() {
                 </button>
               </div>
 
+              {/* Add connected clients section in admin dashboard */}
+              <div className="mb-12">
+                <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Connected Clients</h2>
+                <div className="grid gap-4">
+                  {connectedClients.length === 0 ? (
+                    <p className="text-slate-600 dark:text-slate-400">No clients connected</p>
+                  ) : (
+                    connectedClients.map((client) => (
+                      <div
+                        key={client.id}
+                        className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-4 rounded-xl shadow-lg"
+                      >
+                        <div className="flex justify-between items-start">
+                          <div>
+                            <h3 className="text-lg font-semibold text-slate-900 dark:text-white">
+                              Client {client.id.slice(0, 8)}...
+                            </h3>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                              Connected: {new Date(client.connectedAt).toLocaleString()}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                              Last Activity: {new Date(client.lastActivity).toLocaleString()}
+                            </p>
+                          </div>
+                          <button
+                            onClick={() => setActiveClient(client.id)}
+                            className={`px-3 py-1 rounded-lg text-sm ${
+                              activeClient === client.id
+                                ? 'bg-blue-500 text-white'
+                                : 'bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200'
+                            }`}
+                          >
+                            {activeClient === client.id ? 'Viewing' : 'View'}
+                          </button>
+                        </div>
+                      </div>
+                    ))
+                  )}
+                </div>
+              </div>
+
+              {/* Add mirrored client view */}
+              {mirroredQuestion && (
+                <div className="mb-12 bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-6 rounded-xl shadow-lg">
+                  <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Active Client View</h2>
+                  
+                  {/* Question Display */}
+                  <div className="mb-6">
+                    <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-2">
+                      Question {mirroredQuestion.questionIndex + 1}
+                    </h3>
+                    
+                    {/* Scenario */}
+                    {mirroredQuestion.question.scenario && (
+                      <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
+                        <h5 className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-1">Scenario:</h5>
+                        <p className="text-sm text-blue-700 dark:text-blue-200">
+                          {mirroredQuestion.question.scenario}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {/* Question Text */}
+                    <p className="text-slate-700 dark:text-gray-300 mb-4">
+                      {mirroredQuestion.question.question}
+                    </p>
+                    
+                    {/* Options */}
+                    <div className="space-y-3">
+                      {mirroredQuestion.question.options.map((option: string, index: number) => (
+                        <div
+                          key={index}
+                          className={`p-3 rounded-lg ${
+                            mirroredAnswer?.selectedAnswerIndex === index
+                              ? 'bg-blue-100 dark:bg-blue-900 border-2 border-blue-500'
+                              : 'bg-white dark:bg-slate-700'
+                          }`}
+                        >
+                          {option}
+                          {mirroredAnswer?.selectedAnswerIndex === index && (
+                            <span className="ml-2 text-blue-600 dark:text-blue-400">✓</span>
+                          )}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Hints Used */}
+                  {mirroredHints[mirroredQuestion.questionIndex] > 0 && (
+                    <div className="mb-6">
+                      <h4 className="font-semibold text-slate-900 dark:text-white mb-2">Hints Used:</h4>
+                      <div className="space-y-2">
+                        {Array.from({ length: mirroredHints[mirroredQuestion.questionIndex] }).map((_, index) => (
+                          <div key={index} className="bg-blue-50 dark:bg-blue-900/30 p-3 rounded-lg">
+                            <p className="text-blue-800 dark:text-blue-200">
+                              Hint {index + 1}: {mirroredQuestion.question.hints[index]}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Results Display */}
+                  {mirroredResults && (
+                    <div className="mt-6 p-4 bg-green-50 dark:bg-green-900/30 rounded-lg">
+                      <h3 className="text-lg font-semibold text-green-800 dark:text-green-200 mb-2">Assessment Results</h3>
+                      <p className="text-green-700 dark:text-green-300">
+                        Score: {mirroredResults.totalScore}/{mirroredResults.maxScore}
+                      </p>
+                      <div className="mt-4 space-y-4">
+                        {mirroredResults.answers.map((answer: any, index: number) => (
+                          <div key={index} className="bg-white dark:bg-slate-700 p-3 rounded-lg">
+                            <p className="font-medium text-slate-900 dark:text-white">Question {index + 1}</p>
+                            <p className={`text-sm ${answer.isCorrect ? 'text-green-600' : 'text-red-600'}`}>
+                              {answer.isCorrect ? 'Correct' : 'Incorrect'}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                              Selected: {answer.selectedAnswer}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                              Correct: {answer.correctAnswer}
+                            </p>
+                            <p className="text-sm text-slate-600 dark:text-slate-400">
+                              Hints Used: {answer.hintsUsed}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+
+              {/* Existing admin dashboard content */}
               <div className="mb-12">
                 <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Recent Assessments</h2>
                 <div className="grid gap-6">
@@ -540,7 +907,7 @@ function App() {
                 </div>
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Risk Cards</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Risk Cards1</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {riskCards.map((card) => (
                   <motion.div
@@ -582,7 +949,10 @@ function App() {
 
               <button
                 disabled={completedRiskCards.length < 7}
-                onClick={() => setShowFinalAnalytics(true)}
+                onClick={() => {
+                  setSelectedCard('final-analytics');
+                  setShowFinalAnalytics(true);
+                }}
                 className={`mt-8 px-6 py-3 rounded-lg font-bold transition ${
                   completedRiskCards.length < 7
                     ? 'bg-gray-400 text-white cursor-not-allowed'
@@ -619,134 +989,122 @@ function App() {
               </motion.div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-12">
-                <CardContainer>
-                  <CardBody>
-                    <CardItem>
-                      <motion.div
-                        initial={{ opacity: 0, x: -20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.2 }}
-                        className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                  className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <Shield className="h-8 w-8 text-blue-500" />
+                    <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">General Assessment</h2>
+                  </div>
+                  <div className="space-y-4">
+                    <p className="text-slate-700 dark:text-gray-300">
+                      A comprehensive tabletop exercise designed to test your organization's incident response capabilities across all domains.
+                    </p>
+                    <div className="bg-slate-200/50 dark:bg-slate-700/50 rounded-lg p-4">
+                      <h3 className="font-semibold text-slate-900 dark:text-white mb-2">What to Expect:</h3>
+                      <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-gray-300">
+                        <li>Cross-functional scenario-based challenges</li>
+                        <li>Real-world incident response simulations</li>
+                        <li>Decision-making under pressure</li>
+                        <li>Team coordination exercises</li>
+                        <li>Risk assessment across multiple domains</li>
+                      </ul>
+                    </div>
+                    <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
+                      <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Benefits:</h3>
+                      <ul className="list-disc list-inside space-y-2 text-blue-700 dark:text-blue-300">
+                        <li>Identify gaps in incident response procedures</li>
+                        <li>Improve cross-team communication</li>
+                        <li>Test and validate response playbooks</li>
+                        <li>Enhance overall security posture</li>
+                      </ul>
+                    </div>
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.4 }}
+                      className="flex justify-center mt-6"
+                    >
+                      <button
+                        onClick={handleStartGenericAssessment}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
                       >
-                        <div className="flex items-center gap-4 mb-4">
-                          <Shield className="h-8 w-8 text-blue-500" />
-                          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">General Assessment</h2>
-                        </div>
-                        <div className="space-y-4">
-                          <p className="text-slate-700 dark:text-gray-300">
-                            A comprehensive tabletop exercise designed to test your organization's incident response capabilities across all domains.
-                          </p>
-                          <div className="bg-slate-200/50 dark:bg-slate-700/50 rounded-lg p-4">
-                            <h3 className="font-semibold text-slate-900 dark:text-white mb-2">What to Expect:</h3>
-                            <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-gray-300">
-                              <li>Cross-functional scenario-based challenges</li>
-                              <li>Real-world incident response simulations</li>
-                              <li>Decision-making under pressure</li>
-                              <li>Team coordination exercises</li>
-                              <li>Risk assessment across multiple domains</li>
-                            </ul>
-                          </div>
-                          <div className="bg-blue-50 dark:bg-blue-900/30 rounded-lg p-4 border border-blue-200 dark:border-blue-700">
-                            <h3 className="font-semibold text-blue-800 dark:text-blue-200 mb-2">Benefits:</h3>
-                            <ul className="list-disc list-inside space-y-2 text-blue-700 dark:text-blue-300">
-                              <li>Identify gaps in incident response procedures</li>
-                              <li>Improve cross-team communication</li>
-                              <li>Test and validate response playbooks</li>
-                              <li>Enhance overall security posture</li>
-                            </ul>
-                          </div>
+                        Start General Assessment
+                        <ArrowRight className="w-5 h-5" />
+                      </button>
+                    </motion.div>
+                  </div>
+                </motion.div>
+
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.5, delay: 0.3 }}
+                  className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                >
+                  <div className="flex items-center gap-4 mb-4">
+                    <Users className="h-8 w-8 text-blue-500" />
+                    <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Role-Based Assessment</h2>
+                  </div>
+                  <p className="text-slate-700 dark:text-gray-300 mb-6">Select one or more roles to take a specialized assessment.</p>
+                  
+                  <div className="bg-slate-200/50 dark:bg-slate-700/50 rounded-lg p-4 mb-6">
+                    <h3 className="font-semibold text-slate-900 dark:text-white mb-2">What to Expect:</h3>
+                    <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-gray-300">
+                      <li>Role-specific scenarios and challenges</li>
+                      <li>Tailored questions for your expertise</li>
+                      <li>Focused assessment on your responsibilities</li>
+                    </ul>
+                  </div>
+                  
+                  <div className="relative">
+                    <div className="max-h-[300px] overflow-y-auto pr-4 role-scrollbar">
+                      <div className="grid grid-cols-1 gap-3">
+                        {roles.map((role, index) => (
                           <motion.div
+                            key={role}
                             initial={{ opacity: 0, y: 20 }}
                             animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.4 }}
-                            className="flex justify-center mt-6"
+                            transition={{ duration: 0.3, delay: 0.1 * index }}
+                            onClick={() => handleRoleSelect(role)}
+                            className={`p-4 rounded-xl cursor-pointer transition-all duration-300 backdrop-blur-sm ${
+                              selectedRoles.includes(role)
+                                ? 'bg-blue-600/90 border-2 border-blue-400 shadow-lg scale-105'
+                                : 'bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200/80 dark:hover:bg-slate-600/80'
+                            }`}
                           >
-                            <button
-                              onClick={handleStartGenericAssessment}
-                              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
-                            >
-                              Start General Assessment
-                              <ArrowRight className="w-5 h-5" />
-                            </button>
+                            <h3 className={`font-medium text-lg ${
+                              selectedRoles.includes(role)
+                                ? 'text-white'
+                                : 'text-slate-900 dark:text-white'
+                            }`}>{role}</h3>
                           </motion.div>
-                        </div>
-                      </motion.div>
-                    </CardItem>
-                  </CardBody>
-                </CardContainer>
+                        ))}
+                      </div>
+                    </div>
+                    <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-100/80 dark:from-slate-800/80 to-transparent pointer-events-none rounded-b-xl"></div>
+                  </div>
 
-                <CardContainer>
-                  <CardBody>
-                    <CardItem>
-                      <motion.div
-                        initial={{ opacity: 0, x: 20 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        transition={{ duration: 0.5, delay: 0.3 }}
-                        className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                  {selectedRoles.length > 0 && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 20 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      transition={{ duration: 0.5, delay: 0.6 }}
+                      className="flex justify-center mt-6"
+                    >
+                      <button
+                        onClick={handleStartRoleBasedAssessment}
+                        className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
                       >
-                        <div className="flex items-center gap-4 mb-4">
-                          <Users className="h-8 w-8 text-blue-500" />
-                          <h2 className="text-2xl font-semibold text-slate-900 dark:text-white">Role-Based Assessment</h2>
-                        </div>
-                        <p className="text-slate-700 dark:text-gray-300 mb-6">Select one or more roles to take a specialized assessment.</p>
-                        
-                        <div className="bg-slate-200/50 dark:bg-slate-700/50 rounded-lg p-4 mb-6">
-                          <h3 className="font-semibold text-slate-900 dark:text-white mb-2">What to Expect:</h3>
-                          <ul className="list-disc list-inside space-y-2 text-slate-700 dark:text-gray-300">
-                            <li>Role-specific scenarios and challenges</li>
-                            <li>Tailored questions for your expertise</li>
-                            <li>Focused assessment on your responsibilities</li>
-                          </ul>
-                        </div>
-                        
-                        <div className="relative">
-                          <div className="max-h-[300px] overflow-y-auto pr-4 role-scrollbar">
-                            <div className="grid grid-cols-1 gap-3">
-                              {roles.map((role, index) => (
-                                <motion.div
-                                  key={role}
-                                  initial={{ opacity: 0, y: 20 }}
-                                  animate={{ opacity: 1, y: 0 }}
-                                  transition={{ duration: 0.3, delay: 0.1 * index }}
-                                  onClick={() => handleRoleSelect(role)}
-                                  className={`p-4 rounded-xl cursor-pointer transition-all duration-300 backdrop-blur-sm ${
-                                    selectedRoles.includes(role)
-                                      ? 'bg-blue-600/90 border-2 border-blue-400 shadow-lg scale-105'
-                                      : 'bg-slate-100/80 dark:bg-slate-700/80 hover:bg-slate-200/80 dark:hover:bg-slate-600/80'
-                                  }`}
-                                >
-                                  <h3 className={`font-medium text-lg ${
-                                    selectedRoles.includes(role)
-                                      ? 'text-white'
-                                      : 'text-slate-900 dark:text-white'
-                                  }`}>{role}</h3>
-                                </motion.div>
-                              ))}
-                            </div>
-                          </div>
-                          <div className="absolute bottom-0 left-0 right-0 h-8 bg-gradient-to-t from-slate-100/80 dark:from-slate-800/80 to-transparent pointer-events-none rounded-b-xl"></div>
-                        </div>
-
-                        {selectedRoles.length > 0 && (
-                          <motion.div
-                            initial={{ opacity: 0, y: 20 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            transition={{ duration: 0.5, delay: 0.6 }}
-                            className="flex justify-center mt-6"
-                          >
-                            <button
-                              onClick={handleStartRoleBasedAssessment}
-                              className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center gap-2 shadow-lg hover:shadow-xl hover:scale-105"
-                            >
-                              Start Assessment
-                              <ArrowRight className="w-5 h-5" />
-                            </button>
-                          </motion.div>
-                        )}
-                      </motion.div>
-                    </CardItem>
-                  </CardBody>
-                </CardContainer>
+                        Start Assessment
+                        <ArrowRight className="w-5 h-5" />
+                      </button>
+                    </motion.div>
+                  )}
+                </motion.div>
               </div>
             </div>
           </div>
@@ -780,6 +1138,9 @@ function App() {
                 ) {
                   setIsUserAuthenticated(true);
                   setUserLoginError('');
+                  // Register socket as client
+                  console.log('Registering socket as client:', socket?.id);
+                  socket?.emit('register', 'client');
                 } else {
                   setUserLoginError('Invalid credentials');
                 }
@@ -878,7 +1239,7 @@ function App() {
 
           <section className="py-20 px-4">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">Risk Cards</h2>
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">Risk Cards2</h2>
              
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredRiskCards.map((card) => (
@@ -895,7 +1256,7 @@ function App() {
                       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{card.title}</h3>
                       <p className="text-slate-700 dark:text-gray-300">{card.description}</p>
                       <div className="mt-4">
-                        <p className="text-sm text-slate-600 dark:text-gray-400">Relevant Roles:</p>
+                        <p className="text-sm text-slate-600 dark:text-slate-400">Relevant Roles:</p>
                         <div className="flex flex-wrap gap-2 mt-2">
                           {selectedRoles.map((role) => (
                             <span 
@@ -918,7 +1279,10 @@ function App() {
 
               <button
                 disabled={completedRiskCards.length < 7}
-                onClick={() => setShowFinalAnalytics(true)}
+                onClick={() => {
+                  setSelectedCard('final-analytics');
+                  setShowFinalAnalytics(true);
+                }}
                 className={`mt-8 px-6 py-3 rounded-lg font-bold transition ${
                   completedRiskCards.length < 7
                     ? 'bg-gray-400 text-white cursor-not-allowed'
@@ -957,7 +1321,7 @@ function App() {
           >
             <div 
               className={`bg-white dark:bg-slate-800 rounded-xl overflow-y-auto shadow-2xl ${
-                showAnalytics ? 'w-[90%] h-[90%]' : 'w-3/4 h-3/4'
+                showAnalytics || showFinalAnalytics ? 'w-[90%] h-[90%]' : 'w-3/4 h-3/4'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
@@ -966,6 +1330,7 @@ function App() {
                   onClick={() => {
                     setSelectedCard(null);
                     setShowAnalytics(false);
+                    setShowFinalAnalytics(false);
                   }}
                   className="mb-4 text-blue-600 dark:text-blue-400 hover:underline flex items-center text-sm"
                 >
@@ -976,11 +1341,55 @@ function App() {
                 </button>
                 
                 <h3 className="text-2xl font-bold mb-6 text-center text-slate-900 dark:text-white flex-shrink-0">
-                  {showAnalytics ? 'Analytics Dashboard' : riskCards.find(c => c.id === selectedCard)?.title + ' Assessment'}
+                  {showFinalAnalytics ? 'Final Analytics Dashboard' : showAnalytics ? 'Analytics Dashboard' : riskCards.find(c => c.id === selectedCard)?.title + ' Assessment'}
                 </h3>
                
                 <div className="flex-grow overflow-y-auto">
-                  {!showAnalytics ? (
+                  {showFinalAnalytics ? (
+                    <div className="p-4">
+                      <div className="mb-8">
+                        <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-4">Risk Card Summary</h4>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          {assessments.map((assessment) => (
+                            assessment.scores.map((score) => (
+                              <div key={score.cardId} className="bg-slate-100 dark:bg-slate-700 p-4 rounded-lg">
+                                <h5 className="font-semibold text-slate-900 dark:text-white mb-2">{score.cardTitle}</h5>
+                                <div className="space-y-2">
+                                  <p className="text-slate-700 dark:text-gray-300">
+                                    Score: {score.score}/{score.maxScore}
+                                  </p>
+                                  <p className="text-slate-700 dark:text-gray-300">
+                                    Correct Answers: {score.answeredQuestions.filter(Boolean).length}/{score.answeredQuestions.length}
+                                  </p>
+                                  <p className="text-slate-700 dark:text-gray-300">
+                                    Success Rate: {Math.round((score.score / score.maxScore) * 100)}%
+                                  </p>
+                                </div>
+                              </div>
+                            ))
+                          ))}
+                        </div>
+                      </div>
+                      <Analytics
+                        answeredQuestions={assessments.flatMap(a => a.scores.flatMap(s => s.answeredQuestions))}
+                        hintCounts={assessments.flatMap(a => a.hintCounts || [])}
+                        currentRiskCardQuestions={
+                          assessments.flatMap(a =>
+                            a.scores.flatMap(s => {
+                              const card = riskCards.find(c => c.id === s.cardId);
+                              // Only include the questions that were actually answered (should be 5 per card)
+                              return card ? card.questions.slice(0, s.answeredQuestions.length) : [];
+                            })
+                          )
+                        }
+                        selectedRoles={
+                          // Aggregate all roles the user selected across all assessments
+                          Array.from(new Set(assessments.flatMap(a => a.selectedRoles)))
+                        }
+                        totalScore={assessments.reduce((total, a) => total + a.scores.reduce((sum, s) => sum + s.score, 0), 0)}
+                      />
+                    </div>
+                  ) : !showAnalytics ? (
                     !getCurrentQuestion() ? (
                       <div className="p-6 text-center text-slate-700 dark:text-gray-300">
                         Loading question...
@@ -989,16 +1398,43 @@ function App() {
                       <div className="bg-slate-100 dark:bg-slate-700 rounded-lg p-6">
                         <h4 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Assessment Complete</h4>
                         <div className="flex flex-col items-center justify-center space-y-6">
-                          <p className="text-lg text-slate-700 dark:text-gray-300 text-center">
-                            You have completed the {riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management assessment.
-                          </p>
+                          <div className="text-center">
+                            <p className="text-lg text-slate-700 dark:text-gray-300 mb-4">
+                              You have completed the {riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management assessment.
+                            </p>
+                            <div className="text-3xl font-bold text-indigo-600 dark:text-indigo-400 mb-4">
+                              Score: {answeredQuestions.filter(Boolean).length}/{currentRiskCardQuestions.length}
+                            </div>
+                            <div className="text-slate-700 dark:text-gray-300 mb-6">
+                              {answeredQuestions.filter(Boolean).length >= 4 ? (
+                                <p>Excellent performance! You demonstrated strong understanding of {riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management.</p>
+                              ) : answeredQuestions.filter(Boolean).length >= 3 ? (
+                                <p>Good job! You showed solid knowledge of {riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management.</p>
+                              ) : (
+                                <p>Keep practicing! Review the {riskCards.find(c => c.id === selectedCard)?.title.toLowerCase()} management concepts to improve your understanding.</p>
+                              )}
+                            </div>
+                            {completedRiskCards.length === riskCards.length && (
+                              <div className="mt-4 p-4 bg-indigo-50 dark:bg-indigo-900/30 rounded-lg">
+                                <p className="text-indigo-700 dark:text-indigo-300">
+                                  Congratulations! You have completed all risk card assessments. You can now view your final analytics.
+                                </p>
+                              </div>
+                            )}
+                          </div>
                           <div className="flex justify-center space-x-4">
                             <button
-                              onClick={() => setShowAnalytics(true)}
+                              onClick={() => {
+                                if (completedRiskCards.length === riskCards.length) {
+                                  setShowFinalAnalytics(true);
+                                } else {
+                                  setSelectedCard(null);
+                                  setShowResults(false);
+                                }
+                              }}
                               className="flex items-center px-6 py-3 bg-indigo-600 text-white rounded-lg hover:bg-indigo-700 transition-colors"
                             >
-                              <BarChart2 className="w-5 h-5 mr-2" />
-                              View Analytics
+                              {completedRiskCards.length === riskCards.length ? 'View Final Analytics' : 'Move to Next Risk Card'}
                             </button>
                             <button
                               onClick={handleBackToRoleSelection}
@@ -1119,11 +1555,22 @@ function App() {
                         </button>
                       </div>
                       <Analytics
-                        answeredQuestions={answeredQuestions}
-                        hintCounts={hintCounts}
-                        currentRiskCardQuestions={currentRiskCardQuestions}
-                        selectedRoles={selectedRoles}
-                        totalScore={calculateTotalScore()}
+                        answeredQuestions={assessments.flatMap(a => a.scores.flatMap(s => s.answeredQuestions))}
+                        hintCounts={assessments.flatMap(a => a.hintCounts || [])}
+                        currentRiskCardQuestions={
+                          assessments.flatMap(a =>
+                            a.scores.flatMap(s => {
+                              const card = riskCards.find(c => c.id === s.cardId);
+                              // Only include the questions that were actually answered (should be 5 per card)
+                              return card ? card.questions.slice(0, s.answeredQuestions.length) : [];
+                            })
+                          )
+                        }
+                        selectedRoles={
+                          // Aggregate all roles the user selected across all assessments
+                          Array.from(new Set(assessments.flatMap(a => a.selectedRoles)))
+                        }
+                        totalScore={assessments.reduce((total, a) => total + a.scores.reduce((sum, s) => sum + s.score, 0), 0)}
                       />
                     </div>
                   )}
