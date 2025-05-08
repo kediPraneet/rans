@@ -233,7 +233,7 @@ function App() {
     
     if (selectedRoles.length === 0) {
         console.log("No roles selected, returning first 5 questions of the current card.");
-        return card.questions.slice(0, 5);
+        return card.questions.slice(0, 5).map(q => ({ ...q, cardTitle: card.title }));
     }
 
     const allMatchingRoleQuestions: Question[] = [];
@@ -241,7 +241,7 @@ function App() {
         rc.questions.forEach(q => {
             if (selectedRoles.includes(q.role)) {
                 if (!allMatchingRoleQuestions.some(existingQ => existingQ.question === q.question)) {
-                    allMatchingRoleQuestions.push(q);
+                    allMatchingRoleQuestions.push({ ...q, cardTitle: rc.title });
                 }
             }
         });
@@ -251,7 +251,7 @@ function App() {
 
     if (allMatchingRoleQuestions.length === 0) {
         console.log("No questions found for selected roles across all cards. Falling back to first 5 of current card.");
-        return card.questions.slice(0, 5);
+        return card.questions.slice(0, 5).map(q => ({ ...q, cardTitle: card.title }));
     }
     if (allMatchingRoleQuestions.length <= 5) {
         console.log("5 or fewer total matching questions found. Using all and shuffling.");
@@ -261,8 +261,6 @@ function App() {
     console.log("More than 5 total matching questions found. Randomly selecting 5.");
     const shuffledAll = shuffleArray([...allMatchingRoleQuestions]);
     const finalSelection = shuffledAll.slice(0, 5);
-    
-    console.log("Final selected questions (randomly from all role matches):", finalSelection.map((q: Question) => q.question));
     return finalSelection;
   };
 
@@ -703,10 +701,8 @@ function App() {
                     {/* Scenario */}
                     {mirroredQuestion.question.scenario && (
                       <div className="mb-4 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
-                        <h5 className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-1">Scenario:</h5>
-                        <p className="text-sm text-blue-700 dark:text-blue-200">
-                          {mirroredQuestion.question.scenario}
-                        </p>
+                        <h5 className="text-[1.25em] font-bold text-blue-800 dark:text-blue-300 mb-1">Scenario:</h5>
+                        <p className="text-sm text-blue-700 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: mirroredQuestion.question.scenario || '' }} />
                       </div>
                     )}
                     
@@ -1113,7 +1109,7 @@ function App() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-gray-400">
                 <ShieldIcon className="h-6 w-6" />
-                <span>© 2025 Ransomware Protection. All rights reserved.</span>
+                <span>© 2025 Deepfake Protection. All rights reserved.</span>
               </div>
             </div>
           </footer>
@@ -1226,12 +1222,12 @@ function App() {
                 </div>
                 <Shield className="h-20 w-20 text-blue-500 dark:text-blue-600 mx-auto mb-8" />
                 <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-6">
-                  Ransomware Attack Scenario
+                  Deepfake Attack Scenario
                 </h1>
                 <p className="text-xl text-slate-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                  The Security Operations Center (SOC) has detected a sophisticated ransomware attack targeting critical IT systems. 
-                  Multiple endpoints are showing signs of encryption, and the attackers are demanding payment in cryptocurrency. 
-                  As the IT Security Lead, you must coordinate the incident response while ensuring business continuity and data protection.
+                  The Security Operations Center (SOC) has detected a sophisticated deepfake attack targeting company executives and critical communications. 
+                  Multiple fake videos and audio recordings are being circulated, potentially causing reputational damage and financial fraud. 
+                  As the IT Security Lead, you must coordinate the incident response while ensuring business continuity and protecting the company's reputation.
                 </p>
               </div>
             </div>
@@ -1298,7 +1294,7 @@ function App() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-gray-400">
                 <ShieldIcon className="h-6 w-6" />
-                <span>© 2025 Ransomware Protection. All rights reserved.</span>
+                <span>© 2025 Deepfake Protection. All rights reserved.</span>
               </div>
             </div>
           </footer>
@@ -1456,10 +1452,8 @@ function App() {
 
                         {getCurrentQuestion()?.scenario && (
                            <div className="mb-6 p-4 bg-blue-50 dark:bg-blue-900/30 rounded-lg border border-blue-200 dark:border-blue-700">
-                             <h5 className="text-sm font-semibold text-blue-800 dark:text-blue-300 mb-1">Scenario:</h5>
-                             <p className="text-sm text-blue-700 dark:text-blue-200">
-                               {getCurrentQuestion()?.scenario}
-                             </p>
+                             <h5 className="text-[1.25em] font-bold text-blue-800 dark:text-blue-300 mb-1">Scenario:</h5>
+                             <p className="text-sm text-blue-700 dark:text-blue-200" dangerouslySetInnerHTML={{ __html: getCurrentQuestion()?.scenario || '' }} />
                            </div>
                          )}
 
