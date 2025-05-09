@@ -1109,7 +1109,7 @@ function App() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-gray-400">
                 <ShieldIcon className="h-6 w-6" />
-                <span>© 2025 Deepfake Protection. All rights reserved.</span>
+                <span>© 2025 Ransomware Protection. All rights reserved.</span>
               </div>
             </div>
           </footer>
@@ -1222,10 +1222,10 @@ function App() {
                 </div>
                 <Shield className="h-20 w-20 text-blue-500 dark:text-blue-600 mx-auto mb-8" />
                 <h1 className="text-5xl font-bold text-slate-900 dark:text-white mb-6">
-                  Deepfake Attack Scenario
+                  Ransomware Attack Scenario
                 </h1>
                 <p className="text-xl text-slate-700 dark:text-gray-300 max-w-4xl mx-auto leading-relaxed">
-                  The Security Operations Center (SOC) has detected a sophisticated deepfake attack targeting company executives and critical communications. 
+                  The Security Operations Center (SOC) has detected a sophisticated ransomware attack targeting company systems and critical data. 
                   Multiple fake videos and audio recordings are being circulated, potentially causing reputational damage and financial fraud. 
                   As the IT Security Lead, you must coordinate the incident response while ensuring business continuity and protecting the company's reputation.
                 </p>
@@ -1294,7 +1294,7 @@ function App() {
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
               <div className="flex items-center justify-center gap-2 text-slate-600 dark:text-gray-400">
                 <ShieldIcon className="h-6 w-6" />
-                <span>© 2025 Deepfake Protection. All rights reserved.</span>
+                <span>© 2025 Ransomware Protection. All rights reserved.</span>
               </div>
             </div>
           </footer>

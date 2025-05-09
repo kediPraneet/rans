@@ -35,14 +35,14 @@ export const riskCards: RiskCard[] = [
   {
     id: 'operational',
     title: 'Operational Disruptions',
-    description: 'Managing business operations during deepfake incidents and service disruptions',
+    description: 'Managing business operations during ransomware attacks and service disruptions',
     icon: 'Building2',
     impact: 'Business Continuity',
     roles: roles,
     questions: [
       {
         question: 'As CFO, what financial measures should be implemented immediately during the operational disruption?',
-        scenario: '<strong style="font-size: 1.25em">The deepfake attack has caused significant business disruption, with fake executive communications leading to operational confusion. Emergency funds are available, but the duration of the impact is unknown.</strong>',
+        scenario: '<strong style="font-size: 1.25em">The ransomware attack has encrypted critical business systems, causing significant operational disruption. Emergency funds are available, but the duration of the impact is unknown.</strong>',
         options: [
           'Access emergency funds only',
           'Implement comprehensive financial contingency plan including emergency funds, credit lines, and insurance claims',
@@ -53,7 +53,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'As Marketing Director, how should you handle customer communications during the disruption?',
-        scenario: '<strong style="font-size: 1.25em">Customers are confused by fake executive videos and statements circulating online. Support lines are overwhelmed. A consistent message is needed urgently.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Customers are experiencing service outages and data access issues. Support lines are overwhelmed. A consistent message is needed urgently.</strong>',
         options: [
           'Delay all communications',
           'Develop a strategic communication plan with transparent updates',
@@ -64,7 +64,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'From a CFO perspective, how should operational recovery costs be prioritized?',
-        scenario: '<strong style="font-size: 1.25em">IT needs funds for deepfake detection tools, Legal needs resources for reputation management, and Support needs overtime pay. Limited immediate funds are available.</strong>',
+        scenario: '<strong style="font-size: 1.25em">IT needs funds for system restoration, Legal needs resources for breach notifications, and Support needs overtime pay. Limited immediate funds are available.</strong>',
         options: [
           'Based on department size',
           'Based on revenue impact and critical business functions',
@@ -75,7 +75,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'As Marketing lead, how should you manage brand reputation during the disruption?',
-        scenario: '<strong style="font-size: 1.25em">News of the deepfake videos is spreading. Competitors might leverage this. Negative press could have long-term impact if not managed proactively.</strong>',
+        scenario: '<strong style="font-size: 1.25em">News of the ransomware attack is spreading. Competitors might leverage this. Negative press could have long-term impact if not managed proactively.</strong>',
         options: [
           'Minimize public communication',
           'Implement proactive reputation management strategy',
@@ -86,7 +86,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'What financial metrics should the CFO monitor during the operational disruption?',
-        scenario: '<strong style="font-size: 1.25em">The disruption is ongoing. To understand the daily financial impact and inform recovery decisions, specific metrics need close tracking.</strong>',
+        scenario: '<strong style="font-size: 1.25em">The ransomware disruption is ongoing. To understand the daily financial impact and inform recovery decisions, specific metrics need close tracking.</strong>',
         options: [
           'Only cash flow',
           'Comprehensive metrics including cash flow, recovery costs, revenue impact, and customer retention',
@@ -96,11 +96,11 @@ export const riskCards: RiskCard[] = [
         correctAnswer: 1, explanation: 'Monitoring comprehensive metrics ensures effective financial management.', hints: ['Consider multiple financial aspects', 'Think about long-term impacts'], role: 'CFO'
       },
       {
-        question: 'As Legal Division, what is the primary legal concern regarding operational disruption caused by deepfakes?',
-        scenario: '<strong style="font-size: 1.25em">The fake videos and statements mean the company is failing to meet its obligations to provide accurate information to stakeholders.</strong>',
+        question: 'As Legal Division, what is the primary legal concern regarding operational disruption caused by ransomware?',
+        scenario: '<strong style="font-size: 1.25em">The encrypted systems mean the company is failing to meet its obligations to provide services to customers and partners.</strong>',
         options: [
           'Employee overtime claims',
-          'Breach of contract with customers/partners due to misinformation',
+          'Breach of contract with customers/partners due to service unavailability',
           'Office lease violations',
           'Trademark infringement'
         ],
@@ -108,20 +108,20 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'As IT System lead, what is the first technical step to ensure operational continuity?',
-        scenario: '<strong style="font-size: 1.25em">Monitoring shows fake executive communications are being circulated. The priority is to restore trust in official communications ASAP.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Critical systems are encrypted. The priority is to restore essential services and establish secure communication channels ASAP.</strong>',
         options: [
           'Order new hardware',
-          'Activate the Crisis Communication Plan and implement secure communication channels',
+          'Activate the Business Continuity Plan and implement secure communication channels',
           'Update antivirus software',
           'Reset all user passwords'
         ],
-        correctAnswer: 1, explanation: 'The Crisis Communication Plan outlines procedures for establishing secure communication channels to minimize operational impact.', hints: ['Focus on immediate recovery actions', 'Consider predefined plans'], role: 'IT System'
+        correctAnswer: 1, explanation: 'The Business Continuity Plan outlines procedures for restoring essential services and establishing secure communication channels.', hints: ['Focus on immediate recovery actions', 'Consider predefined plans'], role: 'IT System'
       },
       {
         question: 'As Legal Division, what advice should be given regarding communication about service unavailability?',
-        scenario: '<strong style="font-size: 1.25em">Marketing is preparing a statement for customers about the deepfake situation. Legal needs to review it before release to manage liability.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Marketing is preparing a statement for customers about the ransomware situation. Legal needs to review it before release to manage liability.</strong>',
         options: [
-          'Avoid mentioning the deepfake attack specifically',
+          'Avoid mentioning the ransomware attack specifically',
           'Be transparent about the disruption but follow approved legal language',
           'Promise a specific recovery timeline immediately',
           'Blame a third-party vendor'
@@ -133,14 +133,14 @@ export const riskCards: RiskCard[] = [
   {
     id: 'ransom',
     title: 'Ransom Pay',
-    description: 'Evaluating and managing extortion attempts',
+    description: 'Evaluating and managing ransom demands',
     icon: 'Banknote',
     impact: 'Financial and Legal Implications',
     roles: roles,
     questions: [
       {
-        question: 'As CFO, what financial analysis is needed for the extortion payment decision?',
-        scenario: '<strong style="font-size: 1.25em">The attackers demand payment to stop circulating deepfake content. Paying might stop the spread, but recovery costs are high either way. A decision is needed soon.</strong>',
+        question: 'As CFO, what financial analysis is needed for the ransom payment decision?',
+        scenario: '<strong style="font-size: 1.25em">The attackers demand payment to decrypt systems. Paying might restore access, but recovery costs are high either way. A decision is needed soon.</strong>',
         options: [
           'Only payment amount',
           'Comprehensive analysis of payment impact, recovery costs, and business losses',
@@ -150,8 +150,8 @@ export const riskCards: RiskCard[] = [
         correctAnswer: 1, explanation: 'A comprehensive financial analysis ensures informed decision-making.', hints: ['Consider all financial implications', 'Think about long-term impact'], role: 'CFO'
       },
       {
-        question: 'How should Marketing handle public perception if extortion payment is considered?',
-        scenario: '<strong style="font-size: 1.25em">Internal discussions about potentially paying the extortionists are occurring. There\'s a risk this information could leak.</strong>',
+        question: 'How should Marketing handle public perception if ransom payment is considered?',
+        scenario: '<strong style="font-size: 1.25em">Internal discussions about potentially paying the ransom are occurring. There\'s a risk this information could leak.</strong>',
         options: [
           'No communication',
           'Develop strategic messaging focusing on business continuity and customer protection',
@@ -161,8 +161,8 @@ export const riskCards: RiskCard[] = [
         correctAnswer: 1, explanation: 'Strategic messaging helps manage stakeholder perceptions.', hints: ['Consider stakeholder concerns', 'Think about transparency levels'], role: 'Marketing'
       },
       {
-        question: 'What financial contingencies should the CFO prepare for extortion scenarios?',
-        scenario: '<strong style="font-size: 1.25em">Whether paying the extortionists or funding a lengthy recovery, significant unplanned expenses are certain. Preparations are needed.</strong>',
+        question: 'What financial contingencies should the CFO prepare for ransom scenarios?',
+        scenario: '<strong style="font-size: 1.25em">Whether paying the ransom or funding a lengthy recovery, significant unplanned expenses are certain. Preparations are needed.</strong>',
         options: [
           'Only payment funds',
           'Comprehensive plan including payment options, recovery funds, and business continuity resources',
@@ -175,8 +175,8 @@ export const riskCards: RiskCard[] = [
         role: 'CFO'
       },
       {
-        question: 'As Marketing Director, how should customer concerns about misinformation be addressed?',
-        scenario: '<strong style="font-size: 1.25em">Regardless of payment, customers are worried about fake content and need reassurance about official communications.</strong>',
+        question: 'As Marketing Director, how should customer concerns about data security be addressed?',
+        scenario: '<strong style="font-size: 1.25em">Regardless of payment, customers are worried about their data and need reassurance about security measures.</strong>',
         options: [
           'Ignore concerns',
           'Implement transparent communication strategy with regular updates (based on known facts)',
@@ -189,7 +189,7 @@ export const riskCards: RiskCard[] = [
         role: 'Marketing'
       },
       {
-        question: 'What financial documentation should the CFO maintain during extortion negotiations?',
+        question: 'What financial documentation should the CFO maintain during ransom negotiations?',
         scenario: '<strong style="font-size: 1.25em">If negotiations occur, auditors and insurers will require detailed records of the process and any associated costs.</strong>',
         options: [
           'Basic payment records',
@@ -203,8 +203,8 @@ export const riskCards: RiskCard[] = [
         role: 'CFO'
       },
       {
-        question: 'As Legal Division, what are the key legal risks associated with paying extortionists?',
-        scenario: '<strong style="font-size: 1.25em">Paying the extortionists might violate government sanctions if they are on a restricted list. There could be severe penalties.</strong>',
+        question: 'As Legal Division, what are the key legal risks associated with paying ransom?',
+        scenario: '<strong style="font-size: 1.25em">Paying the ransom might violate government sanctions if the attackers are on a restricted list. There could be severe penalties.</strong>',
         options: [
           'Tax implications',
           'Violation of anti-money laundering (AML) laws or sanctions (e.g., OFAC)',
@@ -212,26 +212,26 @@ export const riskCards: RiskCard[] = [
           'Negative press coverage'
         ],
         correctAnswer: 1,
-        explanation: 'Paying extortionists, especially to certain groups, can violate sanctions and AML regulations, leading to severe penalties.',
+        explanation: 'Paying ransom, especially to certain groups, can violate sanctions and AML regulations, leading to severe penalties.',
         hints: ['Consider regulatory compliance', 'Think about the recipient of the funds'],
         role: 'Legal Division'
       },
       {
         question: 'As IT System lead, what technical factor most influences the "pay vs. don\'t pay" decision?',
-        scenario: '<strong style="font-size: 1.25em">Management is weighing paying the extortionists versus implementing technical solutions. The ability to detect and block fake content is critical information.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Management is weighing paying the ransom versus implementing technical solutions. The ability to restore from backups is critical information.</strong>',
         options: [
-          'The availability and effectiveness of deepfake detection tools',
-          'The cost of the extortion demand',
-          'The attacker\'s reputation for honoring agreements',
-          'The type of content being faked'
+          'The availability and integrity of system backups',
+          'The cost of the ransom demand',
+          'The attacker\'s reputation for providing decryption keys',
+          'The type of data encrypted'
         ],
         correctAnswer: 0,
-        explanation: 'If reliable deepfake detection tools exist, blocking fake content is often preferable to paying extortionists.',
+        explanation: 'If reliable backups exist, restoring systems is often preferable to paying ransom.',
         hints: ['Consider technical solutions', 'Think about alternatives to payment'],
         role: 'IT System'
       },
       {
-        question: 'As Legal Division, what documentation is essential if a decision is made to pay the extortionists?',
+        question: 'As Legal Division, what documentation is essential if a decision is made to pay the ransom?',
         scenario: '<strong style="font-size: 1.25em">If payment proceeds, regulatory bodies and insurance may investigate. Legal must ensure the decision and process are meticulously documented.</strong>',
         options: [
           'Only the transaction record',
@@ -340,10 +340,10 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'As IT System lead, how can IT contribute to mitigating future financial losses from similar incidents?',
-        scenario: '<strong style="font-size: 1.25em">The high cost of this incident highlights the need for preventative IT measures to reduce the financial impact of future deepfake attacks.</strong>',
+        scenario: '<strong style="font-size: 1.25em">The high cost of this incident highlights the need for preventative IT measures to reduce the financial impact of future ransomware attacks.</strong>',
         options: [
           'By reducing the IT budget',
-          'By implementing enhanced deepfake detection, improving content verification systems, and refining the crisis response plan',
+          'By implementing enhanced ransomware detection, improving content verification systems, and refining the crisis response plan',
           'By outsourcing all IT functions',
           'By focusing only on endpoint protection'
         ],
@@ -353,7 +353,7 @@ export const riskCards: RiskCard[] = [
         role: 'IT System'
       },
       {
-        question: 'As Legal Division, what are the potential legal costs associated with deepfake incidents?',
+        question: 'As Legal Division, what are the potential legal costs associated with ransomware incidents?',
         scenario: '<strong style="font-size: 1.25em">The company may face lawsuits from affected parties, regulatory investigations, and costs for legal representation.</strong>',
         options: [
           'Only court filing fees',
@@ -362,7 +362,7 @@ export const riskCards: RiskCard[] = [
           'Minimal legal expenses'
         ],
         correctAnswer: 1,
-        explanation: 'Deepfake incidents can lead to significant legal costs across multiple areas.',
+        explanation: 'Ransomware incidents can lead to significant legal costs across multiple areas.',
         hints: ['Consider all potential legal actions', 'Think about regulatory compliance'],
         role: 'Legal Division'
       }
@@ -377,8 +377,8 @@ export const riskCards: RiskCard[] = [
     roles: roles,
     questions: [
       {
-        question: 'As Legal Division, what regulatory notifications are required for deepfake incidents?',
-        scenario: '<strong style="font-size: 1.25em">The deepfake attack has potentially exposed sensitive data and affected multiple stakeholders. Regulatory bodies need to be notified.</strong>',
+        question: 'As Legal Division, what regulatory notifications are required for ransomware incidents?',
+        scenario: '<strong style="font-size: 1.25em">The ransomware attack has potentially exposed sensitive data and affected multiple stakeholders. Regulatory bodies need to be notified.</strong>',
         options: [
           'Only notify major regulators',
           'Comprehensive notification plan covering all relevant regulatory bodies based on data types and jurisdictions affected',
@@ -430,7 +430,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'How should Marketing handle internal communications?',
-        scenario: '<strong style="font-size: 1.25em">Employees are anxious due to the deepfake incident. Clear, consistent, and reassuring internal communication is needed to maintain morale and trust.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Employees are anxious due to the ransomware incident. Clear, consistent, and reassuring internal communication is needed to maintain morale and trust.</strong>',
         options: [
           'No communication until everything is resolved',
           'Develop comprehensive internal communication strategy with regular, factual updates approved by Legal/HR',
@@ -444,7 +444,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'What financial support should the CFO consider for affected employees?',
-        scenario: '<strong style="font-size: 1.25em">If employee information was used in deepfake content, the company may need to offer support services.</strong>',
+        scenario: '<strong style="font-size: 1.25em">If employee information was used in ransomware content, the company may need to offer support services.</strong>',
         options: [
           'No support beyond legal requirements',
           'Comprehensive support including identity protection services, mental health resources, and potentially direct assistance programs',
@@ -472,7 +472,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'How should the CFO budget for employee support programs?',
-        scenario: '<strong style="font-size: 1.25em">HR proposes offering identity protection to all employees impacted by the deepfake incident. This has significant cost implications that need budgeting.</strong>',
+        scenario: '<strong style="font-size: 1.25em">HR proposes offering identity protection to all employees impacted by the ransomware incident. This has significant cost implications that need budgeting.</strong>',
         options: [
           'Use leftover funds from other budgets',
           'Develop a comprehensive budget based on estimated uptake, vendor costs, and program duration for support programs and resources',
@@ -485,7 +485,7 @@ export const riskCards: RiskCard[] = [
         role: 'CFO'
       },
       {
-        question: 'As Legal Division, what information must be communicated to employees if their images or data were used in deepfakes?',
+        question: 'As Legal Division, what information must be communicated to employees if their images or data were used in ransomware?',
         scenario: '<strong style="font-size: 1.25em">Forensic evidence suggests employee images or data were used in fake content. Specific laws dictate what employees must be told.</strong>',
         options: [
           'A general notice about the IT incident',
@@ -500,7 +500,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'As IT System lead, how can you support Legal in determining if employee data was compromised?',
-        scenario: '<strong style="font-size: 1.25em">Legal needs confirmation and details about the potential use of employee data in deepfake content to fulfill notification duties.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Legal needs confirmation and details about the potential use of employee data in ransomware content to fulfill notification duties.</strong>',
         options: [
           'By providing a list of all HR systems',
           'By conducting forensic analysis of affected content, access logs, and network traffic to identify specific data usage',
@@ -513,7 +513,7 @@ export const riskCards: RiskCard[] = [
         role: 'IT System'
       },
       {
-        question: 'As Legal Division, what are the implications of delaying necessary employee notifications about data usage in deepfakes?',
+        question: 'As Legal Division, what are the implications of delaying necessary employee notifications about data usage in ransomware?',
         scenario: '<strong style="font-size: 1.25em">There\'s pressure to delay employee notifications until recovery is complete, but privacy laws often have strict reporting timelines.</strong>',
         options: [
           'Improved employee morale by avoiding panic',
@@ -538,7 +538,7 @@ export const riskCards: RiskCard[] = [
     questions: [
       {
         question: 'As Marketing Director, how should the crisis communication plan be activated?',
-        scenario: '<strong style="font-size: 1.25em">The deepfake incident is gaining media attention. A coordinated communication response is needed.</strong>',
+        scenario: '<strong style="font-size: 1.25em">The ransomware incident is gaining media attention. A coordinated communication response is needed.</strong>',
         options: [
           'Issue a single press release',
           'Implement comprehensive crisis communication plan with regular updates and stakeholder engagement',
@@ -552,7 +552,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'As Legal Division, what legal considerations are crucial for crisis communications?',
-        scenario: '<strong style="font-size: 1.25em">Public statements about the deepfake incident must be carefully crafted to avoid legal issues.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Public statements about the ransomware incident must be carefully crafted to avoid legal issues.</strong>',
         options: [
           'Focus only on technical details',
           'Balance transparency with legal requirements, avoiding speculation and maintaining accuracy',
@@ -598,7 +598,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'What financial planning should the CFO implement for future resilience?',
-        scenario: '<strong style="font-size: 1.25em">To better withstand future incidents, proactive investments in areas like deepfake detection and improved content verification are needed. This requires financial planning.</strong>',
+        scenario: '<strong style="font-size: 1.25em">To better withstand future incidents, proactive investments in areas like ransomware detection and improved content verification are needed. This requires financial planning.</strong>',
         options: [
           'Standard operational budget planning',
           'Enhanced financial planning including dedicated budgets for risk mitigation, resilience resources, and regular security audits',
@@ -620,7 +620,7 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'How should the CFO structure long-term recovery investments?',
-        scenario: '<strong style="font-size: 1.25em">Investing in better deepfake detection and content verification post-incident shouldn\'t be seen just as a cost, but as a strategic investment needing proper financial structuring.</strong>',
+        scenario: '<strong style="font-size: 1.25em">Investing in better ransomware detection and content verification post-incident shouldn\'t be seen just as a cost, but as a strategic investment needing proper financial structuring.</strong>',
         options: [
           'As minimal operational expenses',
           'As strategic investments in resilience (detection tech, verification systems) and potentially growth (modernizing systems), evaluated for ROI',
@@ -642,10 +642,10 @@ export const riskCards: RiskCard[] = [
       },
       {
         question: 'As IT System lead, what strategic technology investments could prevent similar incidents in the future?',
-        scenario: '<strong style="font-size: 1.25em">The root cause analysis points to specific technology gaps (e.g., lack of deepfake detection, poor content verification). Strategic investment is needed to address these.</strong>',
+        scenario: '<strong style="font-size: 1.25em">The root cause analysis points to specific technology gaps (e.g., lack of ransomware detection, poor content verification). Strategic investment is needed to address these.</strong>',
         options: [
           'Faster internet connections for the office',
-          'Investments in advanced deepfake detection, content verification systems, improved identity/access management, and enhanced monitoring solutions',
+          'Investments in advanced ransomware detection, content verification systems, improved identity/access management, and enhanced monitoring solutions',
           'More user training videos about phishing',
           'New ergonomic keyboards for the IT team'
         ],
