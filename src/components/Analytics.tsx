@@ -106,6 +106,20 @@ export const Analytics: React.FC<AnalyticsProps> = ({
       .map(obj => obj.card);
   }
 
+  // Calculate correct answers by role
+  const correctAnswersByRole = selectedRoles.map(role => {
+    let correctForRole = 0;
+    currentRiskCardQuestions.forEach((q, idx) => {
+      if (q.role === role && answeredQuestions[idx]) {
+        correctForRole++;
+      }
+    });
+    return {
+      name: role,
+      value: correctForRole
+    };
+  });
+
   return (
     <div className="p-6 bg-white dark:bg-slate-800 rounded-lg shadow-lg">
       <h2 className="text-2xl font-bold mb-6 text-slate-900 dark:text-white">Performance Analytics</h2>
@@ -119,13 +133,13 @@ export const Analytics: React.FC<AnalyticsProps> = ({
           <p className="mt-1">Total Score: {totalScore}</p>
         </div>
 
-        {/* Correct vs Incorrect Distribution */}
+        {/* Correct Answers by Role Distribution */}
         <div className="bg-white dark:bg-slate-700 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Answer Distribution</h3>
+          <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Correct Answers by Role</h3>
           <ResponsiveContainer width="100%" height={200}>
             <PieChart>
               <Pie
-                data={pieData}
+                data={correctAnswersByRole}
                 cx="50%"
                 cy="50%"
                 innerRadius={60}
@@ -133,28 +147,15 @@ export const Analytics: React.FC<AnalyticsProps> = ({
                 fill="#8884d8"
                 paddingAngle={5}
                 dataKey="value"
+                label={({ name, percent }) => `${name}: ${(percent * 100).toFixed(0)}%`}
               >
-                {pieData.map((entry, index) => (
+                {correctAnswersByRole.map((entry, index) => (
                   <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip />
+              <Tooltip formatter={(value) => [`${value} correct answers`, '']} />
               <Legend />
             </PieChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Performance by Role */}
-        <div className="bg-white dark:bg-slate-700 p-4 rounded-lg shadow">
-          <h3 className="text-lg font-semibold mb-4 text-slate-900 dark:text-white">Performance by Role</h3>
-          <ResponsiveContainer width="100%" height={200}>
-            <BarChart data={performanceByRole}>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="role" />
-              <YAxis />
-              <Tooltip />
-              <Bar dataKey="score" fill="#8884d8" />
-            </BarChart>
           </ResponsiveContainer>
         </div>
 
@@ -220,7 +221,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({
                 <div className="text-slate-700 dark:text-gray-300 mb-4">
                   <h4 className="font-semibold mb-2">Primary Focus Area: {sortedCardNames[0]}</h4>
                   <div className="pl-4 border-l-2 border-blue-500">
-                    <p className="mb-2">Based on your performance, you showed challenges in understanding and applying concepts related to {sortedCardNames[0].toLowerCase()} management.</p>
+                    <p className="mb-2">The above Analysis indicates challenges in understanding and applying concepts related to {sortedCardNames[0].toLowerCase()} management.</p>
                     <p className="mb-2">Specific Gaps:</p>
                     <p className="text-sm mb-2 text-slate-600 dark:text-slate-400">The following areas highlight where your understanding needs improvement, along with the specific concepts you should focus on:</p>
                     <ul className="list-disc pl-6 mb-2">
@@ -292,7 +293,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({
                       {sortedCardNames.slice(1, 3).map((cardName, cardIdx) => (
                         <div key={cardIdx} className="mb-4">
                           <p className="font-medium mb-2">{cardName}:</p>
-                          <p className="mb-2">Based on your performance, you showed challenges in understanding and applying concepts related to {cardName.toLowerCase()} management.</p>
+                          <p className="mb-2">The above Analysis indicates challenges in understanding and applying concepts related to {cardName.toLowerCase()} management.</p>
                           <p className="mb-2">Specific Gaps:</p>
                           <p className="text-sm mb-2 text-slate-600 dark:text-slate-400">The following areas highlight where your understanding needs improvement, along with the specific concepts you should focus on:</p>
                           <ul className="list-disc pl-6 mb-2">
@@ -358,7 +359,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({
                 <div className="text-slate-700 dark:text-gray-300 mb-4">
                   <h4 className="font-semibold mb-2">Critical Focus Area: {sortedCardNames[0]}</h4>
                   <div className="pl-4 border-l-2 border-yellow-500">
-                    <p className="mb-2">Context: Your performance indicates significant gaps in understanding {sortedCardNames[0].toLowerCase()} management concepts.</p>
+                    <p className="mb-2">Context: The above Analysis indicates significant gaps in understanding {sortedCardNames[0].toLowerCase()} management concepts.</p>
                     <p className="mb-2">Key Areas of Concern:</p>
                     <p className="text-sm mb-2 text-slate-600 dark:text-slate-400">The following areas highlight where your understanding needs improvement, along with the specific concepts you should focus on:</p>
                     <ul className="list-disc pl-6 mb-2">
@@ -422,6 +423,7 @@ export const Analytics: React.FC<AnalyticsProps> = ({
                       {sortedCardNames.slice(1, 3).map((cardName, cardIdx) => (
                         <div key={cardIdx} className="mb-3">
                           <p className="font-medium mb-1">{cardName}:</p>
+                          <p className="mb-2">The above Analysis indicates challenges in understanding and applying concepts related to {cardName.toLowerCase()} management.</p>
                           <ul className="list-disc pl-6">
                             {currentRiskCardQuestions
                               .filter((q, idx) => q.cardTitle === cardName && !answeredQuestions[idx])
