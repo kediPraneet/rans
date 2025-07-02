@@ -3,7 +3,7 @@ import { Shield, Lock, BookOpen, ArrowRight, Shield as ShieldIcon, Users, CheckC
 import { motion, AnimatePresence } from 'framer-motion';
 import { FloatingNav } from './components/ui/floating-navbar';
 import GridBackgroundDemo from './components/ui/grid-background-demo';
-import { riskCards, RiskCard, Question } from './lib/roleData';
+import { riskCards, RiskCard, Question, roles } from './lib/roleData';
 import { RiskCardIcon } from './components/RiskCardIcon';
 import { assessmentStore, AssessmentData } from './lib/assessmentStore';
 import { Analytics } from './components/Analytics';
@@ -70,17 +70,6 @@ function App() {
 
   // Add new state for connected clients
   const [connectedClients, setConnectedClients] = useState<ClientInfo[]>([]);
-
-  const roles = [
-    'CFO',
-    'IT System',
-    'Legal Division',
-    'Marketing',
-    'Security',
-    'Vendor Manager',
-    'Governance and Compliance',
-    'Security Incident Manager'
-  ];
 
   const handleRoleSelect = (role: string) => {
     setSelectedRoles(prev => {
@@ -229,39 +218,159 @@ function App() {
   }, [isAdmin, socket, activeClient]);
 
   const getFilteredQuestions = (card: RiskCard): Question[] => {
-    console.log(`Ignoring card theme (${card.title}). Selecting questions based ONLY on roles: ${selectedRoles.join(', ')}`);
+    console.log(`Filtering questions for card: ${card.title}, Selected roles:`, selectedRoles);
+    console.log(`Total questions in ${card.title}:`, card.questions.length);
     
+    // Log first few questions and their roles to debug
+    if (card.questions.length > 0) {
+      console.log(`First 3 questions in ${card.title}:`, card.questions.slice(0, 3).map(q => ({ question: q.question.substring(0, 50) + '...', role: q.role })));
+    }
+    
+    const TARGET_QUESTIONS = 5; // Always aim for 5 questions per card
+    
+    // If no roles selected, show first 5 questions from this card (generic assessment)
     if (selectedRoles.length === 0) {
         console.log("No roles selected, returning first 5 questions of the current card.");
-        return card.questions.slice(0, 5).map(q => ({ ...q, cardTitle: card.title }));
+        const questions = card.questions.slice(0, Math.min(TARGET_QUESTIONS, card.questions.length));
+        return questions.map(q => ({ ...q, cardTitle: card.title }));
     }
 
-    const allMatchingRoleQuestions: Question[] = [];
-    riskCards.forEach(rc => {
-        rc.questions.forEach(q => {
-            if (selectedRoles.includes(q.role)) {
-                if (!allMatchingRoleQuestions.some(existingQ => existingQ.question === q.question)) {
-                    allMatchingRoleQuestions.push({ ...q, cardTitle: rc.title });
-                }
-            }
-        });
+    // Filter questions from this card that match selected roles
+    const cardQuestionsForSelectedRoles = card.questions.filter(q => {
+        const matches = selectedRoles.includes(q.role);
+        if (!matches) {
+          console.log(`Question role "${q.role}" not in selected roles:`, selectedRoles);
+        }
+        return matches;
     });
 
-    console.log(`Found ${allMatchingRoleQuestions.length} total questions across all cards for selected roles.`);
+    console.log(`Found ${cardQuestionsForSelectedRoles.length} questions in ${card.title} for selected roles.`);
 
-    if (allMatchingRoleQuestions.length === 0) {
-        console.log("No questions found for selected roles across all cards. Falling back to first 5 of current card.");
-        return card.questions.slice(0, 5).map(q => ({ ...q, cardTitle: card.title }));
+    let selectedQuestions: Question[] = [];
+
+    // If no questions for selected roles in this card, use fallback questions
+    if (cardQuestionsForSelectedRoles.length === 0) {
+        console.log(`No questions found for selected roles in ${card.title}.`);
+        console.log('Available roles in this card:', [...new Set(card.questions.map(q => q.role))]);
+        console.log('Using fallback questions from this card...');
+        // Use first 5 questions from this card as fallback
+        selectedQuestions = card.questions.slice(0, Math.min(TARGET_QUESTIONS, card.questions.length));
     }
-    if (allMatchingRoleQuestions.length <= 5) {
-        console.log("5 or fewer total matching questions found. Using all and shuffling.");
-        return shuffleArray([...allMatchingRoleQuestions]);
+    // If we have some role-specific questions but fewer than 5
+    else if (cardQuestionsForSelectedRoles.length < TARGET_QUESTIONS) {
+        console.log(`Only ${cardQuestionsForSelectedRoles.length} role-specific questions found. Filling to 5 with additional questions.`);
+        
+        if (selectedRoles.length === 1) {
+            // Single role: use all role-specific questions, then fill with others
+            selectedQuestions = [...cardQuestionsForSelectedRoles];
+            const needed = TARGET_QUESTIONS - selectedQuestions.length;
+            
+            // Get additional questions from other roles in this card
+            const otherQuestions = card.questions.filter(q => 
+                !selectedRoles.includes(q.role) && 
+                !selectedQuestions.some(sq => sq.question === q.question)
+            );
+            const shuffledOthers = shuffleArray(otherQuestions);
+            selectedQuestions.push(...shuffledOthers.slice(0, needed));
+            
+        } else {
+            // Multiple roles: distribute proportionally, then fill if needed
+            const questionsPerRole: { [role: string]: Question[] } = {};
+            
+            // Group questions by role
+            selectedRoles.forEach(role => {
+                questionsPerRole[role] = cardQuestionsForSelectedRoles.filter(q => q.role === role);
+            });
+            
+            // Calculate distribution
+            const totalAvailable = cardQuestionsForSelectedRoles.length;
+            const baseQuestionsPerRole = Math.floor(TARGET_QUESTIONS / selectedRoles.length);
+            const extraQuestions = TARGET_QUESTIONS % selectedRoles.length;
+            
+            // Select questions from each role
+            selectedRoles.forEach((role, index) => {
+                const questionsForThisRole = questionsPerRole[role] || [];
+                let questionsToTake = Math.min(baseQuestionsPerRole, questionsForThisRole.length);
+                
+                // Give extra questions to first few roles
+                if (index < extraQuestions && questionsForThisRole.length > questionsToTake) {
+                    questionsToTake += 1;
+                }
+                
+                const shuffledRoleQuestions = shuffleArray([...questionsForThisRole]);
+                const takenQuestions = shuffledRoleQuestions.slice(0, questionsToTake);
+                selectedQuestions.push(...takenQuestions);
+                
+                console.log(`Selected ${takenQuestions.length} questions for role ${role} in ${card.title}.`);
+            });
+            
+            // If we still need more questions to reach 5, fill from any remaining questions
+            if (selectedQuestions.length < TARGET_QUESTIONS) {
+                const needed = TARGET_QUESTIONS - selectedQuestions.length;
+                const remainingQuestions = card.questions.filter(q => 
+                    !selectedQuestions.some(sq => sq.question === q.question)
+                );
+                const shuffledRemaining = shuffleArray(remainingQuestions);
+                selectedQuestions.push(...shuffledRemaining.slice(0, needed));
+                console.log(`Added ${Math.min(needed, shuffledRemaining.length)} additional questions to reach 5 total.`);
+            }
+        }
+    }
+    // If we have 5 or more role-specific questions
+    else {
+        console.log(`${cardQuestionsForSelectedRoles.length} role-specific questions available. Selecting 5.`);
+        
+        if (selectedRoles.length === 1) {
+            // Single role: randomly select 5 questions
+            const shuffled = shuffleArray([...cardQuestionsForSelectedRoles]);
+            selectedQuestions = shuffled.slice(0, TARGET_QUESTIONS);
+        } else {
+            // Multiple roles: distribute proportionally
+            const questionsPerRole: { [role: string]: Question[] } = {};
+            
+            // Group questions by role
+            selectedRoles.forEach(role => {
+                questionsPerRole[role] = cardQuestionsForSelectedRoles.filter(q => q.role === role);
+            });
+            
+            // Calculate distribution
+            const baseQuestionsPerRole = Math.floor(TARGET_QUESTIONS / selectedRoles.length);
+            const extraQuestions = TARGET_QUESTIONS % selectedRoles.length;
+            
+            // Select questions from each role
+            selectedRoles.forEach((role, index) => {
+                const questionsForThisRole = questionsPerRole[role] || [];
+                let questionsToTake = baseQuestionsPerRole;
+                
+                // Give extra questions to first few roles
+                if (index < extraQuestions) {
+                    questionsToTake += 1;
+                }
+                
+                const shuffledRoleQuestions = shuffleArray([...questionsForThisRole]);
+                const takenQuestions = shuffledRoleQuestions.slice(0, Math.min(questionsToTake, questionsForThisRole.length));
+                selectedQuestions.push(...takenQuestions);
+                
+                console.log(`Selected ${takenQuestions.length} questions for role ${role} in ${card.title}.`);
+            });
+            
+            // If we still need more questions to reach exactly 5
+            if (selectedQuestions.length < TARGET_QUESTIONS) {
+                const needed = TARGET_QUESTIONS - selectedQuestions.length;
+                const remainingQuestions = cardQuestionsForSelectedRoles.filter(q => 
+                    !selectedQuestions.some(sq => sq.question === q.question)
+                );
+                const shuffledRemaining = shuffleArray(remainingQuestions);
+                selectedQuestions.push(...shuffledRemaining.slice(0, needed));
+            }
+        }
     }
 
-    console.log("More than 5 total matching questions found. Randomly selecting 5.");
-    const shuffledAll = shuffleArray([...allMatchingRoleQuestions]);
-    const finalSelection = shuffledAll.slice(0, 5);
-    return finalSelection;
+    // Ensure we don't exceed 5 questions
+    selectedQuestions = selectedQuestions.slice(0, TARGET_QUESTIONS);
+
+    console.log(`Final selection: ${selectedQuestions.length} questions from ${card.title}.`);
+    return selectedQuestions.map(q => ({ ...q, cardTitle: card.title }));
   };
 
   const handleCardClick = (cardId: string) => {
@@ -903,7 +1012,7 @@ function App() {
                 </div>
               </div>
 
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Risk Cards1</h2>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white mb-6">Risk Cards</h2>
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {riskCards.map((card) => (
                   <motion.div
@@ -1235,7 +1344,7 @@ function App() {
 
           <section className="py-20 px-4">
             <div className="max-w-7xl mx-auto">
-              <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">Risk Cards2</h2>
+              <h2 className="text-4xl font-bold text-slate-900 dark:text-white text-center mb-12">Risk Cards</h2>
              
               <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 {filteredRiskCards.map((card) => (
@@ -1253,7 +1362,7 @@ function App() {
                       <p className="text-slate-700 dark:text-gray-300">{card.description}</p>
                       <div className="mt-4">
                         <p className="text-sm text-slate-600 dark:text-slate-400">Relevant Roles:</p>
-                        <div className="flex flex-wrap gap-2 mt-2">
+                        <div className="flex flex-wrap gap-2">
                           {selectedRoles.map((role) => (
                             <span 
                               key={role}
@@ -1317,7 +1426,7 @@ function App() {
           >
             <div 
               className={`bg-white dark:bg-slate-800 rounded-xl overflow-y-auto shadow-2xl ${
-                showAnalytics || showFinalAnalytics ? 'w-[90%] h-[90%]' : 'w-3/4 h-3/4'
+                showAnalytics || showFinalAnalytics ? 'w-[95%] h-[95%]' : 'w-[90%] h-[90%] max-w-6xl'
               }`}
               onClick={(e) => e.stopPropagation()}
             >
