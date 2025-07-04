@@ -449,36 +449,71 @@ function App() {
 
   const handleAnswerSelect = (answerIndex: number) => {
     console.log('Answer selected:', answerIndex);
+    
+    // Check if this answer is already selected
+    const isAlreadySelected = selectedAnswers[currentQuestionIndex] === answerIndex;
+    
     setSelectedAnswers(prev => {
       const newAnswers = [...prev];
-      newAnswers[currentQuestionIndex] = answerIndex;
+      if (isAlreadySelected) {
+        // Deselect the answer by removing it
+        newAnswers[currentQuestionIndex] = undefined;
+      } else {
+        // Select the new answer
+        newAnswers[currentQuestionIndex] = answerIndex;
+      }
       return newAnswers;
     });
     
     const currentQuestion = getCurrentQuestion();
     if (currentQuestion) {
-      const isCorrect = answerIndex === currentQuestion.correctAnswer;
-      console.log('Is answer correct:', isCorrect);
-      setAnsweredQuestions(prevAnswers => {
-        const newAnswers = [...prevAnswers];
-        while (newAnswers.length <= currentQuestionIndex) {
-          newAnswers.push(false);
-        }
-        newAnswers[currentQuestionIndex] = isCorrect;
-        return newAnswers;
-      });
+      if (isAlreadySelected) {
+        // Clear the answered question state when deselecting
+        setAnsweredQuestions(prevAnswers => {
+          const newAnswers = [...prevAnswers];
+          while (newAnswers.length <= currentQuestionIndex) {
+            newAnswers.push(false);
+          }
+          newAnswers[currentQuestionIndex] = false;
+          return newAnswers;
+        });
+        
+        // Emit deselection event
+        socket?.emit('messageFromClient', {
+          type: 'answer_selection',
+          data: {
+            cardId: selectedCard,
+            questionIndex: currentQuestionIndex,
+            selectedAnswerIndex: null,
+            selectedAnswerText: 'Deselected',
+            timestamp: new Date().toISOString()
+          }
+        });
+      } else {
+        // Handle normal selection
+        const isCorrect = answerIndex === currentQuestion.correctAnswer;
+        console.log('Is answer correct:', isCorrect);
+        setAnsweredQuestions(prevAnswers => {
+          const newAnswers = [...prevAnswers];
+          while (newAnswers.length <= currentQuestionIndex) {
+            newAnswers.push(false);
+          }
+          newAnswers[currentQuestionIndex] = isCorrect;
+          return newAnswers;
+        });
 
-      // Emit answer selection event
-      socket?.emit('messageFromClient', {
-        type: 'answer_selection',
-        data: {
-          cardId: selectedCard,
-          questionIndex: currentQuestionIndex,
-          selectedAnswerIndex: answerIndex,
-          selectedAnswerText: currentQuestion.options[answerIndex],
-          timestamp: new Date().toISOString()
-        }
-      });
+        // Emit answer selection event
+        socket?.emit('messageFromClient', {
+          type: 'answer_selection',
+          data: {
+            cardId: selectedCard,
+            questionIndex: currentQuestionIndex,
+            selectedAnswerIndex: answerIndex,
+            selectedAnswerText: currentQuestion.options[answerIndex],
+            timestamp: new Date().toISOString()
+          }
+        });
+      }
     }
   };
 
@@ -1017,9 +1052,17 @@ function App() {
                 {riskCards.map((card) => (
                   <motion.div
                     key={card.id}
-                    className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-8 rounded-xl shadow-lg"
+                    className="bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-8 rounded-xl shadow-lg relative"
                     whileHover={{ y: -5 }}
                   >
+                    {/* Completion indicator for overview */}
+                    {completedRiskCards.includes(card.id) && (
+                      <div className="absolute top-4 right-4">
+                        <div className="bg-green-500 rounded-full p-1.5 shadow-lg">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    )}
                     <div>
                       <RiskCardIcon iconName={card.icon} className="h-12 w-12 text-red-500" />
                       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{card.title}</h3>
@@ -1350,14 +1393,31 @@ function App() {
                 {filteredRiskCards.map((card) => (
                   <motion.div
                     key={card.id}
-                    className={`bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-8 rounded-xl cursor-pointer transform transition-all duration-300 hover:scale-105 ${
+                    className={`bg-slate-100/80 dark:bg-slate-800/80 backdrop-blur-sm p-8 rounded-xl cursor-pointer transform transition-all duration-300 hover:scale-105 relative ${
                       selectedCard === card.id ? 'ring-2 ring-blue-500' : ''
+                    } ${
+                      completedRiskCards.includes(card.id) ? 'ring-2 ring-green-400' : ''
                     }`}
                     onClick={() => handleCardClick(card.id)}
                     whileHover={{ y: -5 }}
                   >
+                    {/* Completion indicator for interactive cards */}
+                    {completedRiskCards.includes(card.id) && (
+                      <div className="absolute top-4 right-4 z-10">
+                        <div className="bg-green-500 rounded-full p-1.5 shadow-lg">
+                          <CheckCircle className="h-4 w-4 text-white" />
+                        </div>
+                      </div>
+                    )}
                     <div>
-                      <RiskCardIcon iconName={card.icon} className="h-12 w-12 text-red-500" />
+                      <div className="flex items-start justify-between mb-4">
+                        <RiskCardIcon iconName={card.icon} className="h-12 w-12 text-red-500" />
+                        {completedRiskCards.includes(card.id) && (
+                          <span className="text-xs bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 px-2 py-1 rounded-full font-medium">
+                            Completed
+                          </span>
+                        )}
+                      </div>
                       <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-4">{card.title}</h3>
                       <p className="text-slate-700 dark:text-gray-300">{card.description}</p>
                       <div className="mt-4">
@@ -1601,20 +1661,15 @@ function App() {
                           {getCurrentQuestion()?.options.map((option: string, index: number) => (
                             <button
                               key={index}
-                              className={`w-full text-left p-4 rounded-lg transition-colors flex justify-between items-center border-2 ${
-                                selectedAnswers.length > 0 
-                                  ? 'cursor-not-allowed' 
-                                  : 'hover:border-blue-500 dark:hover:border-blue-400'
-                              } ${
-                                selectedAnswers.includes(index)
+                              className={`w-full text-left p-4 rounded-lg transition-colors flex justify-between items-center border-2 hover:border-blue-500 dark:hover:border-blue-400 ${
+                                selectedAnswers[currentQuestionIndex] === index
                                   ? 'bg-blue-100 dark:bg-blue-900/50 border-blue-500 dark:border-blue-400 text-blue-800 dark:text-white'
                                   : 'bg-slate-100 dark:bg-slate-700 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-gray-200'
                               }`}
                               onClick={() => handleAnswerSelect(index)}
-                              disabled={selectedAnswers.length > 0}
                             >
                               <span>{option}</span>
-                              {selectedAnswers.includes(index) && (
+                              {selectedAnswers[currentQuestionIndex] === index && (
                                 <CheckCircle className="h-6 w-6 text-blue-600 dark:text-blue-400" />
                               )}
                             </button>
@@ -1635,9 +1690,9 @@ function App() {
                           </button>
                           <button
                             onClick={handleNextQuestion}
-                            disabled={selectedAnswers.length === 0}
+                            disabled={selectedAnswers[currentQuestionIndex] === undefined}
                             className={`px-6 py-2 rounded-full transition-colors ${
-                              selectedAnswers.length === 0
+                              selectedAnswers[currentQuestionIndex] === undefined
                                 ? 'bg-gray-300 dark:bg-gray-600 cursor-not-allowed text-slate-500 dark:text-gray-400'
                                 : 'bg-blue-600 hover:bg-blue-700 text-white'
                             }`}
